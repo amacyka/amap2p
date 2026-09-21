@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMACY — Панель бота</title>
+<style>
+  :root{
+    --bg:#050505; --card:#0D0E10; --card2:#111214; --border:rgba(255,255,255,.08);
+    --text:#F2F2F0; --muted:#8b8d93; --accent:#8fd9b4; --accent-dim:#5fa98a; --red:#d98b86;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:16px;min-height:100vh;}
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:18px;margin:0 0 16px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
+  input,textarea{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:10px;
+    padding:11px 13px;color:var(--text);font-size:15px;outline:none;font-family:inherit;}
+  textarea{resize:vertical;min-height:80px;}
+  .btn{padding:11px 16px;border-radius:100px;border:none;font-size:14px;font-weight:600;cursor:pointer;
+    background:var(--text);color:var(--bg);}
+  .btn.secondary{background:transparent;color:var(--text);border:1px solid var(--border);}
+  .btn.danger{background:var(--red);color:#2a0d0b;}
+  .btn:active{opacity:.75;}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .row{display:flex;gap:8px;}
+  #gate{max-width:340px;margin:80px auto 0;text-align:center;}
+  #gate img{height:48px;margin-bottom:18px;}
+  #app{display:none;}
+  .tabs{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:4px;margin-bottom:14px;gap:3px;}
+  .tab{flex:1;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:600;
+    color:var(--muted);cursor:pointer;}
+  .tab.active{background:var(--accent);color:#062015;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .stat{font-size:13px;color:var(--muted);margin-bottom:10px;}
+  .stat b{color:var(--text);font-size:15px;}
+  .user-row{display:flex;justify-content:space-between;align-items:center;padding:12px;
+    background:var(--card2);border-radius:12px;margin-bottom:8px;cursor:pointer;}
+  .user-row:active{background:var(--border);}
+  .user-row .name{font-size:14px;font-weight:600;}
+  .user-row .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .user-row .when{font-size:11px;color:var(--muted);white-space:nowrap;}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 0;}
+  #chatOverlay{position:fixed;inset:0;background:var(--bg);z-index:50;display:none;
+    flex-direction:column;padding:16px;}
+  #chatOverlay.open{display:flex;}
+  .chat-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .back-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+    font-size:18px;cursor:pointer;flex-shrink:0;}
+  .chat-title{font-size:15px;font-weight:700;}
+  .chat-sub{font-size:12px;color:var(--muted);}
+  #chatMessages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 0 12px;}
+  .bubble{max-width:80%;padding:9px 13px;border-radius:14px;font-size:14px;line-height:1.4;}
+  .bubble.user{align-self:flex-start;background:var(--card2);border-bottom-left-radius:4px;}
+  .bubble.admin{align-self:flex-end;background:var(--accent);color:#062015;border-bottom-right-radius:4px;}
+  .bubble .time{display:block;font-size:10px;opacity:.6;margin-top:3px;}
+  .chat-input{display:flex;gap:8px;}
+  .chat-input textarea{min-height:44px;max-height:120px;}
+  #confirmModal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;
+    align-items:center;justify-content:center;padding:20px;}
+  #confirmModal.open{display:flex;}
+  .modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:340px;width:100%;}
+  .modal-msg{font-size:14px;line-height:1.5;margin-bottom:16px;white-space:pre-line;}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:16px;}
+  .refresh-note{font-size:11px;color:var(--muted);text-align:center;margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>AMACY — панель</h1>
+  <div class="card">
+    <input type="password" id="pwInput" placeholder="Пароль" autocomplete="off">
+    <div class="err" id="gateErr"></div>
+    <button class="btn" style="width:100%;margin-top:10px;" id="loginBtn">Войти</button>
+  </div>
+</div>
+
+<div id="app" class="wrap">
+  <h1>AMACY — панель бота</h1>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="users">Пользователи</div>
+    <div class="tab" data-tab="broadcast">Рассылка</div>
+  </div>
+
+  <div class="panel active" id="tab-users">
+    <div class="stat">Всего пользователей: <b id="userCount">—</b></div>
+    <div id="userList"><div class="empty">Загрузка…</div></div>
+    <div class="refresh-note">Обновляется автоматически</div>
+  </div>
+
+  <div class="panel" id="tab-broadcast">
+    <div class="card">
+      <textarea id="broadcastText" placeholder="Текст сообщения для всех пользователей…"></textarea>
+      <button class="btn" style="width:100%;margin-top:10px;" id="broadcastBtn">Отправить всем</button>
+      <div class="err" id="broadcastErr"></div>
+    </div>
+  </div>
+</div>
+
+<div id="chatOverlay">
+  <div class="chat-header">
+    <div class="back-btn" id="chatBack">‹</div>
+    <div>
+      <div class="chat-title" id="chatTitle"></div>
+      <div class="chat-sub" id="chatSub"></div>
+    </div>
+  </div>
+  <div id="chatMessages"></div>
+  <div class="chat-input">
+    <textarea id="chatInput" placeholder="Ответить…"></textarea>
+    <button class="btn" id="chatSend" style="align-self:flex-end;">➤</button>
+  </div>
+</div>
+
+<div id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-msg" id="confirmMsg"></div>
+    <div class="row">
+      <button class="btn secondary" style="flex:1;" id="confirmCancel">Отмена</button>
+      <button class="btn" style="flex:1;" id="confirmOk">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let PW = sessionStorage.getItem('amacy_admin_pw') || '';
+let currentChatId = null;
+let usersTimer = null;
+let chatTimer = null;
+
+async function api(action, opts = {}) {
+  const res = await fetch(`/.netlify/functions/admin-api?action=${action}`, {
+    method: opts.method || 'GET',
+    headers: { 'Content-Type': 'application/json', 'x-admin-password': PW },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if (res.status === 401) throw new Error('unauthorized');
+  if (!res.ok) throw new Error('request failed');
+  return res.json();
+}
+
+document.getElementById('loginBtn').onclick = async () => {
+  const val = document.getElementById('pwInput').value.trim();
+  if (!val) return;
+  PW = val;
+  try {
+    await api('list');
+    sessionStorage.setItem('amacy_admin_pw', PW);
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    startApp();
+  } catch (e) {
+    document.getElementById('gateErr').textContent = 'Неверный пароль';
+  }
+};
+document.getElementById('pwInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+function startApp() {
+  loadUsers();
+  usersTimer = setInterval(loadUsers, 8000);
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  };
+});
+
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+async function loadUsers() {
+  try {
+    const { users } = await api('list');
+    document.getElementById('userCount').textContent = users.length;
+    const list = document.getElementById('userList');
+    if (!users.length) {
+      list.innerHTML = '<div class="empty">Пока никто не писал боту</div>';
+      return;
+    }
+    list.innerHTML = users.map(u => `
+      <div class="user-row" onclick="openChat('${u.id}')">
+        <div>
+          <div class="name">${escapeHtml(u.first_name || 'Без имени')} ${u.last_name ? escapeHtml(u.last_name) : ''}</div>
+          <div class="sub">${u.username ? '@' + escapeHtml(u.username) : 'без username'} · с ${fmtTime(u.joined_at)}</div>
+        </div>
+        <div class="when">${fmtTime(u.last_message_at)}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    // тихо игнорируем сетевые сбои при автообновлении
+  }
+}
+
+window.openChat = async (chatId) => {
+  currentChatId = chatId;
+  document.getElementById('chatOverlay').classList.add('open');
+  await loadChat();
+  chatTimer = setInterval(loadChat, 4000);
+};
+
+document.getElementById('chatBack').onclick = () => {
+  document.getElementById('chatOverlay').classList.remove('open');
+  clearInterval(chatTimer);
+  currentChatId = null;
+};
+
+async function loadChat() {
+  if (!currentChatId) return;
+  try {
+    const [{ messages }, { users }] = await Promise.all([
+      api('messages&chatId=' + currentChatId),
+      api('list'),
+    ]);
+    const u = users.find(x => x.id === currentChatId);
+    if (u) {
+      document.getElementById('chatTitle').textContent = (u.first_name || 'Без имени') + (u.last_name ? ' ' + u.last_name : '');
+      document.getElementById('chatSub').textContent = u.username ? '@' + u.username : 'ID: ' + u.id;
+    }
+    const box = document.getElementById('chatMessages');
+    const wasAtBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 20;
+    box.innerHTML = messages.map(m => `
+      <div class="bubble ${m.from}">${escapeHtml(m.text)}<span class="time">${fmtTime(m.ts)}</span></div>
+    `).join('');
+    if (wasAtBottom || box.dataset.first !== 'done') {
+      box.scrollTop = box.scrollHeight;
+      box.dataset.first = 'done';
+    }
+  } catch (e) {}
+}
+
+document.getElementById('chatSend').onclick = async () => {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !currentChatId) return;
+  input.value = '';
+  try {
+    await api('reply', { method: 'POST', body: { chatId: currentChatId, text } });
+    await loadChat();
+  } catch (e) {
+    alert('Не удалось отправить сообщение');
+  }
+};
+document.getElementById('chatInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('chatSend').click(); }
+});
+
+// ---- рассылка ----
+document.getElementById('broadcastBtn').onclick = () => {
+  const text = document.getElementById('broadcastText').value.trim();
+  if (!text) return;
+  document.getElementById('confirmMsg').textContent = 'Отправить всем пользователям:\n\n' + text;
+  document.getElementById('confirmModal').classList.add('open');
+};
+document.getElementById('confirmCancel').onclick = () => {
+  document.getElementById('confirmModal').classList.remove('open');
+};
+document.getElementById('confirmOk').onclick = async () => {
+  document.getElementById('confirmModal').classList.remove('open');
+  const btn = document.getElementById('broadcastBtn');
+  btn.disabled = true;
+  btn.textContent = 'Отправка…';
+  const text = document.getElementById('broadcastText').value.trim();
+  try {
+    const { sent, failed } = await api('broadcast', { method: 'POST', body: { text } });
+    document.getElementById('broadcastErr').style.color = 'var(--accent)';
+    document.getElementById('broadcastErr').textContent = `Отправлено: ${sent}, не доставлено: ${failed}`;
+    document.getElementById('broadcastText').value = '';
+  } catch (e) {
+    document.getElementById('broadcastErr').style.color = 'var(--red)';
+    document.getElementById('broadcastErr').textContent = 'Ошибка отправки';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Отправить всем';
+};
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// автовход, если пароль уже сохранён в этом браузере
+if (PW) {
+  api('list').then(() => {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    startApp();
+  }).catch(() => { sessionStorage.removeItem('amacy_admin_pw'); PW = ''; });
+}
+</script>
+</body>
+</html>
