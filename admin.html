@@ -136,7 +136,7 @@ let usersTimer = null;
 let chatTimer = null;
 
 async function api(action, opts = {}) {
-  const res = await fetch(`/.netlify/functions/admin-api?action=${action}`, {
+  const res = await fetch(`/api/admin-api?action=${action}`, {
     method: opts.method || 'GET',
     headers: { 'Content-Type': 'application/json', 'x-admin-password': PW },
     body: opts.body ? JSON.stringify(opts.body) : undefined,
