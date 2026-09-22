@@ -1,0 +1,2987 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>P2P AMACY</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="P2P AMACY">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1115">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f1115'/%3E%3Ctext x='50' y='63' font-size='42' font-weight='700' font-family='Arial' fill='%233ecf8e' text-anchor='middle'%3E%E2%82%BD%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f1115'/%3E%3Ctext x='50' y='63' font-size='42' font-weight='700' font-family='Arial' fill='%233ecf8e' text-anchor='middle'%3E%E2%82%BD%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href='data:application/manifest+json,{"name":"P2P%20AMACY","short_name":"P2P%20AMACY","display":"standalone","start_url":".","background_color":"%230f1115","theme_color":"%230f1115"}'>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+  :root{
+    --bg:#050505; --card:#0D0E10; --card2:#111214; --border:rgba(255,255,255,.08);
+    --text:#F2F2F0; --muted:#8b8d93; --accent:#8fd9b4; --accent-dim:#5fa98a;
+    --red:#d98b86; --yellow:#d9b26a; --usdt:#8fd9b4;
+  }
+  [data-theme="light"]{
+    --bg:#f4f5f7; --card:#ffffff; --card2:#f0f1f4; --border:#e1e3e8;
+    --text:#1a1d24; --muted:#6b7280; --accent:#1e9e6a; --accent-dim:#17845a;
+    --red:#d64545; --yellow:#c98a1a; --usdt:#1c8060;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:calc(14px + env(safe-area-inset-top)) 14px 90px; transition:background .2s,color .2s;}
+  .wrap{max-width:480px;margin:0 auto;}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  h1{font-size:18px;font-weight:700;margin:0;}
+  .brand-logo{height:48px;width:auto;display:block;}
+  [data-theme="light"] .brand-logo{filter:invert(1) brightness(0.85);}
+  .icon-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+    font-size:17px;color:var(--text);cursor:pointer;}
+  .tabs{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:4px;margin-bottom:14px;gap:3px;}
+  .tab{flex:1;text-align:center;padding:9px 1px;border-radius:8px;font-size:10.5px;font-weight:600;
+    color:var(--muted);cursor:pointer;user-select:none;}
+  .tab.active{background:var(--accent);color:#062015;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:12px;}
+  .field{margin-bottom:14px;min-width:0;}
+  .field:last-child{margin-bottom:0;}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  input,select{width:100%;min-width:0;background:var(--card2);border:1px solid var(--border);border-radius:12px;
+    padding:12px 14px;color:var(--text);font-size:17px;font-weight:500;outline:none;
+    -webkit-appearance:none;appearance:none;transition:border-color .2s,background .2s;}
+  input:focus,select:focus{border-color:rgba(255,255,255,.22);background:var(--card);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .preset-btns{display:flex;gap:6px;margin-top:6px;justify-content:center;}
+  .preset-btn{flex:0 0 auto;background:var(--card2);border:1px solid var(--border);border-radius:8px;
+    padding:6px 16px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;}
+  .preset-btn:active{background:var(--border);}
+  .amount-input-wrap{position:relative;}
+  .amount-input-wrap input{padding-right:44px;}
+  .amount-clear-btn{position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; padding:0; margin:0; border-radius:50%; background:var(--card2); border:1px solid var(--border);
+    color:var(--muted); font-size:14px; line-height:1; font-family:inherit; -webkit-appearance:none; appearance:none;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .amount-clear-btn:active{background:var(--border);}
+  .toggle-group{display:flex;background:var(--card2);border-radius:12px;padding:3px;border:1px solid var(--border);}
+  .toggle-opt{flex:1;text-align:center;padding:8px 4px;border-radius:9px;font-size:13px;font-weight:600;
+    color:var(--muted);cursor:pointer;transition:background .2s,color .2s;}
+  .toggle-opt.active{background:var(--text);color:var(--bg);}
+  .currency-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
+    background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:3px;}
+  .currency-grid .toggle-opt{padding:9px 2px; font-size:12.5px; text-align:center;}
+  .conv-hint{font-size:12px;color:var(--muted);margin-top:6px;}
+  .result{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px 20px;margin-bottom:12px;}
+  .result-main{text-align:center;padding-bottom:18px;margin-bottom:16px;border-bottom:1px solid var(--border);}
+  .result-main .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+  .result-main .value{font-size:40px;font-weight:700;color:var(--accent);letter-spacing:-.01em;
+    transition:opacity .15s;font-family:inherit;}
+  .result-main .value.negative{color:var(--red);}
+  .result-main .value2{font-size:16px;font-weight:500;color:var(--muted);margin-top:4px;}
+  .result-sub{font-size:12.5px;color:var(--muted);margin-top:8px;}
+  .badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:6px 14px;border-radius:20px;font-size:11px;
+    font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .badge::before{content:'●';font-size:8px;line-height:1;}
+  .badge.good{background:rgba(143,217,180,.13);color:var(--accent);}
+  .badge.warn{background:rgba(217,178,106,.13);color:var(--yellow);}
+  .badge.bad{background:rgba(217,139,134,.13);color:var(--red);}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .stat{background:var(--card2);border-radius:14px;padding:12px 14px;}
+  .stat .k{font-size:11.5px;color:var(--muted);margin-bottom:3px;}
+  .stat .v{font-size:15.5px;font-weight:600;}
+  .btn-row{display:flex;gap:10px;}
+  .btn{flex:1;padding:14px;border-radius:100px;border:none;font-size:14px;font-weight:600;cursor:pointer;text-align:center;
+    transition:opacity .2s,transform .2s;}
+  .btn-primary{background:var(--text);color:var(--bg);}
+  .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);}
+  .btn:active{opacity:.7;transform:scale(.98);}
+  .info-dot{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;
+    border-radius:50%;border:1px solid var(--border);color:var(--muted);font-size:10px;font-style:normal;
+    margin-left:4px;cursor:help;vertical-align:middle;}
+  .rate-link{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0 12px;
+    font-size:11px;color:var(--muted);}
+  .rate-link .rl-line{flex:1;height:1px;background:var(--border);}
+  .rate-link .rl-spread{white-space:nowrap;font-weight:600;color:var(--text);}
+  .note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.4;}
+  .hist-summary{display:flex;gap:10px;margin-bottom:12px;}
+  .hist-summary .stat{flex:1;text-align:center;}
+  .hist-item,.day-row{background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:8px;
+    display:flex;justify-content:space-between;align-items:center;}
+  .hist-item .info{font-size:12px;color:var(--muted);}
+  .hist-item .profit{font-size:15px;font-weight:700;color:var(--accent);}
+  .hist-item .profit.negative{color:var(--red);}
+  .hist-item .profit-usdt{font-size:12px;color:var(--usdt);font-weight:600;}
+  .hist-del{background:none;border:none;color:var(--muted);font-size:18px;padding:4px 8px;cursor:pointer;}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:20px 0;}
+  .day-row{align-items:flex-start;flex-direction:column;gap:6px;}
+  .day-row .date-row{display:flex;align-items:center;justify-content:space-between;width:100%;gap:8px;}
+  .day-row .date-row .day-delete{flex-shrink:0;margin:-4px -8px -4px 0;}
+  .day-row .date{font-size:13px;font-weight:700;}
+  .day-row .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;}
+  .day-row .grid .mini{font-size:12px;color:var(--muted);}
+  .day-row .grid .mini b{color:var(--text);display:block;font-size:14px;}
+  .day-row .grid .mini b.pos{color:var(--accent);}
+  .day-row .grid .mini b.neg{color:var(--red);}
+  .tg-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;padding:13px 16px;
+    background:#2AABEE;color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:12px;text-align:center;}
+  .tg-btn:active{opacity:.85;}
+
+  .period-btns{display:flex;gap:6px;flex-wrap:wrap;}
+  .period-btn{flex:1;min-width:44px;text-align:center;background:var(--card2);border:1px solid var(--border);
+    border-radius:9px;padding:8px 4px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+  .period-btn.active{background:var(--accent);color:#062015;border-color:var(--accent);}
+  .reports-subview{display:none;}
+  .reports-subview.active{display:block;}
+  .section-title{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 10px;text-transform:uppercase;letter-spacing:.03em;}
+  .section-title-note{font-weight:500;text-transform:none;letter-spacing:0;font-size:11.5px;margin-left:6px;opacity:.75;}
+  .day-row{cursor:pointer;}
+  .day-row:active{background:var(--border);}
+  .day-row .chevron{align-self:flex-end;margin-top:-28px;color:var(--muted);font-size:14px;}
+  .day-closed-badge{display:inline-block;margin-left:6px;font-size:11px;color:var(--accent);font-weight:700;}
+
+  .overlay{
+    position:fixed; inset:0; background:var(--bg); z-index:50;
+    display:none; overflow-y:auto; padding:calc(14px + env(safe-area-inset-top)) 14px 40px;
+  }
+  .overlay.open{display:block;}
+  .overlay-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .overlay-header h2{font-size:17px;font-weight:700;margin:0;flex:1;}
+  .back-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:18px;
+    color:var(--text);cursor:pointer;}
+  .detail-subtitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;
+    margin:16px 0 8px;}
+  .day-status-row{display:flex;justify-content:space-between;align-items:center;}
+  .day-status-label{font-size:16px;font-weight:700;}
+  .day-status-label.closed{color:var(--accent);}
+  .day-status-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  .overview-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .overview-item{
+    background:var(--card2); border:1px solid var(--border); border-radius:12px;
+    padding:12px 4px 10px; text-align:center;
+  }
+  .overview-icon{font-size:19px; line-height:1; margin-bottom:6px;}
+  .overview-label{font-size:10.5px; color:var(--muted); line-height:1.25; margin-bottom:5px; min-height:26px; display:flex; align-items:center; justify-content:center;}
+  .overview-value{font-size:13.5px; font-weight:700; color:var(--text); word-break:break-word;}
+  .overview-value.neg{color:var(--red);}
+
+  .show-closed-row{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--muted);cursor:pointer;}
+  .show-closed-row input{width:auto;padding:0;}
+
+  .day-group{margin-bottom:14px;}
+  .day-group-header{display:flex;justify-content:space-between;align-items:baseline;
+    padding:6px 2px;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .day-group-header b{color:var(--text);font-size:13px;text-transform:none;letter-spacing:0;}
+  .day-group .hist-item{margin-bottom:8px;}
+
+  .item-actions{display:flex;flex-direction:column;gap:2px;align-items:center;}
+  .hist-edit{background:none;border:none;color:var(--muted);font-size:15px;padding:4px 8px;cursor:pointer;}
+
+  .edit-form .field{margin-bottom:8px;}
+  .edit-form label{font-size:11px;margin-bottom:3px;}
+  .edit-form input{padding:9px 10px;font-size:14px;}
+  .edit-form .row2{gap:8px;}
+  .edit-form .btn-row{margin-top:8px;gap:8px;}
+  .edit-form .btn{padding:9px;font-size:13px;}
+  .edit-form .ef-optype-group{margin-bottom:0;}
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:100;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:20px; max-width:340px; width:100%;
+  }
+  .modal-message{font-size:14px; line-height:1.5; white-space:pre-line; margin-bottom:16px;}
+
+  /* ---------- currency select button + picker modal ---------- */
+  .currency-select-btn{
+    width:100%; text-align:left; background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px; color:var(--text); font-size:17px; font-weight:600;
+    cursor:pointer; transition:border-color .2s,background .2s;
+  }
+  .currency-select-btn:active{background:var(--card);}
+  .currency-picker-box{max-width:420px; max-height:80vh; display:flex; flex-direction:column; padding:16px;}
+  .currency-picker-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .currency-picker-title{font-size:15px; font-weight:700;}
+  .currency-picker-close{background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:2px 6px;}
+  .currency-picker-search{
+    width:100%; background:var(--card2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 13px; color:var(--text); font-size:15px; outline:none; margin-bottom:10px; flex-shrink:0;
+  }
+  .currency-picker-search:focus{border-color:rgba(255,255,255,.22);}
+  .currency-picker-list{overflow-y:auto; flex:1; min-height:0;}
+  .currency-picker-item{
+    display:flex; align-items:center; gap:12px; padding:11px 8px; border-radius:10px; cursor:pointer;
+  }
+  .currency-picker-item:active{background:var(--card2);}
+  .currency-picker-item.active{background:var(--card2);}
+  .currency-picker-item .cp-symbol{
+    width:34px; height:34px; border-radius:9px; background:var(--card2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;
+  }
+  .currency-picker-item .cp-info{min-width:0; flex:1;}
+  .currency-picker-item .cp-code{font-size:14px; font-weight:700;}
+  .currency-picker-item .cp-name{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .currency-picker-item .cp-check{color:var(--accent); font-size:16px; flex-shrink:0;}
+  .currency-picker-empty{text-align:center; color:var(--muted); font-size:13px; padding:24px 0;}
+
+  .goal-block{margin-top:16px; padding-top:16px; border-top:1px solid var(--border);}
+  .goal-progress-bar{
+    width:100%; height:14px; border-radius:8px; background:var(--card2);
+    overflow:hidden; border:1px solid var(--border);
+  }
+  .goal-progress-fill{
+    height:100%; width:0%; background:var(--accent); border-radius:8px;
+    transition:width .3s ease;
+  }
+  .goal-progress-fill.complete{background:var(--usdt);}
+  .goal-progress-text{font-size:13px; color:var(--muted); margin-top:8px; text-align:center; line-height:1.4;}
+
+  /* ---------- per-currency period metrics ---------- */
+  .curr-block{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;}
+  .curr-block:last-child{margin-bottom:0;}
+  .curr-block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .curr-profit-row{background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .curr-profit-row .k{font-size:11px;color:var(--muted);margin-bottom:3px;}
+  .curr-profit-row .v{font-size:17px;font-weight:700;color:var(--text);}
+  .curr-profit-row .v.pos{color:var(--accent);}
+  .curr-profit-row .v.neg{color:var(--red);}
+  .curr-profit-row .v span{font-size:12.5px;font-weight:500;color:var(--muted);}
+  .curr-badge{font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--text);background:var(--card);
+    border:1px solid var(--border);border-radius:8px;padding:3px 10px;}
+  .curr-count{font-size:12px;color:var(--muted);}
+  .curr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .curr-item{background:var(--card);border-radius:10px;padding:9px 11px;}
+  .curr-item.full{grid-column:1 / -1;}
+  .curr-item .k{font-size:11px;color:var(--muted);margin-bottom:3px;}
+  .curr-item .v{font-size:14px;font-weight:600;color:var(--text);}
+
+  /* ---------- period vs previous-period compare badge ---------- */
+  .period-compare{font-size:12px;margin-top:6px;font-weight:600;}
+  .period-compare.pos{color:var(--accent);}
+  .period-compare.neg{color:var(--red);}
+  .period-compare.muted{color:var(--muted);font-weight:500;}
+
+  /* ---------- mini month calendar ---------- */
+  .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .cal-nav-btn{background:var(--card2);border:1px solid var(--border);border-radius:8px;
+    width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:15px;
+    color:var(--text);cursor:pointer;}
+  .cal-label{font-size:13px;font-weight:700;text-transform:capitalize;}
+  .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
+  .cal-dow{text-align:center;font-size:10px;color:var(--muted);font-weight:600;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;
+    font-size:11px;color:var(--muted);background:var(--card2);}
+  .cal-cell.empty-cell{background:transparent;}
+  .cal-cell.has-data{cursor:pointer;font-weight:700;color:var(--text);}
+  .cal-cell.pos{background:rgba(143,217,180,.16);color:var(--accent);}
+  .cal-cell.neg{background:rgba(217,139,134,.16);color:var(--red);}
+  .cal-cell:active.has-data{opacity:.7;}
+
+  /* ---------- reserve / set-aside ---------- */
+  .reserve-hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4;}
+
+  /* ---------- time-of-day stats ---------- */
+  .tod-row{margin-bottom:10px;}
+  .tod-row:last-child{margin-bottom:0;}
+  .tod-head{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted);margin-bottom:4px;}
+  .tod-head b{color:var(--text);font-weight:700;}
+  .tod-head b.neg{color:var(--red);}
+  .tod-bar-bg{width:100%;height:10px;border-radius:6px;background:var(--card2);overflow:hidden;border:1px solid var(--border);}
+  .tod-bar-fill{height:100%;border-radius:6px;background:var(--accent);transition:width .3s ease;}
+  .tod-bar-fill.neg{background:var(--red);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="data:image/png;base64,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" alt="AMACY" class="brand-logo">
+    <div class="icon-btn" id="themeToggle">🌙</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="calc">Калк.</div>
+    <div class="tab" data-tab="history">Сделки</div>
+    <div class="tab" data-tab="expenses">Расходы</div>
+    <div class="tab" data-tab="deposit">Депозит</div>
+    <div class="tab" data-tab="reports">Отчёты</div>
+  </div>
+
+  <!-- ===================== CALC ===================== -->
+  <div class="panel active" id="tab-calc">
+
+    <div class="field" style="margin-bottom:12px;">
+      <label>Валюта пары</label>
+      <button type="button" class="currency-select-btn" id="fiatCurrencyBtn">₽ RUB ▾</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Параметры сделки</div>
+
+      <div class="field">
+        <label>Ввожу сумму в</label>
+        <div class="toggle-group" id="currToggle">
+          <div class="toggle-opt active" data-curr="rub">В валюте пары</div>
+          <div class="toggle-opt" data-curr="usdt">USDT</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="amountLabel">Сумма сделки, ₽</label>
+        <div class="amount-input-wrap">
+          <input type="number" id="amount" value="85000" step="any" inputmode="decimal">
+          <button type="button" class="amount-clear-btn" id="amountClearBtn">&times;</button>
+        </div>
+        <div class="conv-hint" id="convHint"></div>
+      </div>
+
+      <div class="rate-link"><span class="rl-line"></span><span class="rl-spread" id="rateLinkSpread">спред —</span><span class="rl-line"></span></div>
+
+      <div class="row2">
+        <div class="field" id="rateSellField">
+          <label id="rateSellLabel">Курс продажи (мой, ₽)</label>
+          <input type="number" id="rateSell" value="89" step="any" inputmode="decimal">
+          <div class="preset-btns">
+            <div class="preset-btn" data-target="rateSell" data-delta="-0.1">−0.1</div>
+            <div class="preset-btn" data-target="rateSell" data-delta="0.1">+0.1</div>
+          </div>
+        </div>
+        <div class="field">
+          <label id="rateBuyLabel">Курс покупки (₽)</label>
+          <input type="number" id="rateBuy" value="85" step="any" inputmode="decimal">
+          <div class="preset-btns">
+            <div class="preset-btn" data-target="rateBuy" data-delta="-0.1">−0.1</div>
+            <div class="preset-btn" data-target="rateBuy" data-delta="0.1">+0.1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Комиссия с продажи, % <span class="info-dot" title="Комиссия рассчитывается от выручки сделки.">i</span></label>
+          <input type="number" id="feePct" value="0" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label id="feeFlatLabel">Комиссия фикс., ₽</label>
+          <input type="number" id="feeFlat" value="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Мой порог прибыли, % (для подсветки)</label>
+        <input type="number" id="minThreshold" value="2" step="any" inputmode="decimal">
+      </div>
+
+    </div>
+
+    <div class="result">
+      <div class="result-main">
+        <div class="label" id="resultLabel">Чистая прибыль, USDT</div>
+        <div class="value" id="profitUsdtValue">0 USDT</div>
+        <div class="value2" id="profitValue">≈ 0 ₽</div>
+        <div class="result-sub" id="profitPctLabel"></div>
+        <div class="badge good" id="thresholdBadge">Сделка в плюсе</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="k">Спред</div><div class="v" id="spreadValue">0 ₽</div></div>
+        <div class="stat"><div class="k">Спред, %</div><div class="v" id="spreadPctValue">0%</div></div>
+        <div class="stat"><div class="k">Выручка</div><div class="v" id="revenueValue">0 ₽</div></div>
+        <div class="stat"><div class="k">Затраты</div><div class="v" id="costValue">0 ₽</div></div>
+      </div>
+
+      <div class="note" id="dealsToGoalHint" style="text-align:center;"></div>
+
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-secondary" id="copyBtn">Копировать</button>
+        <button class="btn btn-primary" id="saveBtn">Сохранить сделку</button>
+      </div>
+
+      <div class="note">Прибыль в USDT считается по курсу покупки. Комиссия списывается с выручки от продажи.</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" id="converterToggle" style="cursor:pointer;">Мини-конвертер валют ▾</div>
+      <div id="converterBody" style="display:none;">
+        <div class="field">
+          <label>Сумма</label>
+          <input type="number" id="convAmount" value="1000" step="any" inputmode="decimal">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>Из валюты</label>
+            <select id="convFromCur"></select>
+            <input type="number" id="convFromRate" value="85" step="any" inputmode="decimal" placeholder="курс к USDT" style="margin-top:6px;">
+          </div>
+          <div class="field">
+            <label>В валюту</label>
+            <select id="convToCur"></select>
+            <input type="number" id="convToRate" value="35" step="any" inputmode="decimal" placeholder="курс к USDT" style="margin-top:6px;">
+          </div>
+        </div>
+        <div class="note" id="convResult" style="text-align:center; font-size:15px; font-weight:700; color:var(--text);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== HISTORY ===================== -->
+  <div class="panel" id="tab-history">
+    <div class="card" id="historyStatusCard">
+      <div class="hist-summary">
+        <div class="stat"><div class="k" id="historyDealsLabel">Сделок сегодня</div><div class="v" id="todayCount">0</div></div>
+        <div class="stat"><div class="k">Профит, USDT</div><div class="v" id="todayProfit">0 USDT</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="clearHistBtn">🗑 Очистить сделки</button>
+      </div>
+    </div>
+    <div id="historyList"><div class="empty">Пока нет сохранённых сделок</div></div>
+  </div>
+
+  <!-- ===================== EXPENSES ===================== -->
+  <div class="panel" id="tab-expenses">
+    <div class="card">
+      <div class="row2">
+        <div class="field">
+          <label>Сеть / тип</label>
+          <select id="expNetwork">
+            <option value="TRC20">TRC20 (Tron)</option>
+            <option value="TON">TON</option>
+            <option value="BEP20">BEP20 (BSC)</option>
+            <option value="ERC20">ERC20 (Ethereum)</option>
+            <option value="Другое">Другое</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Сумма, USDT</label>
+          <input type="number" id="expAmount" value="1" step="any" inputmode="decimal">
+        </div>
+      </div>
+      <div class="field">
+        <label>Комментарий (необязательно)</label>
+        <input type="text" id="expComment" placeholder="напр. перевод с Bybit">
+      </div>
+      <button class="btn btn-primary" id="addExpBtn" style="width:100%;">+ Добавить расход</button>
+    </div>
+
+    <div class="card">
+      <div class="hist-summary">
+        <div class="stat"><div class="k">Расходы сегодня</div><div class="v" id="todayExpenses">0 USDT</div></div>
+        <div class="stat"><div class="k">Всего расходов</div><div class="v" id="allExpenses">0 USDT</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="clearExpBtn">🗑 Очистить всё</button>
+      </div>
+    </div>
+    <div class="card" id="expensesList"><div class="empty">Расходов пока нет</div></div>
+  </div>
+
+  <!-- ===================== DEPOSIT ===================== -->
+  <div class="panel" id="tab-deposit">
+    <div class="card" id="depositStatusCard">
+      <div class="section-title">Начальный депозит текущего дня</div>
+      <div class="field">
+        <label>Начальный депозит, USDT</label>
+        <input type="number" id="depositStart" value="" step="any" inputmode="decimal" placeholder="напр. 1000">
+      </div>
+      <button class="btn btn-primary" id="saveDepositBtn" style="width:100%;">💾 Сохранить</button>
+    </div>
+
+    <div class="result">
+      <div class="result-main">
+        <div class="label">Баланс на конец дня, USDT</div>
+        <div class="value" id="depositBalance">0 USDT</div>
+        <div class="result-sub" id="depositBreakdown"></div>
+        <div class="result-sub" id="availableBreakdown" style="margin-top:4px;font-weight:700;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Добавить операцию</div>
+      <div class="field">
+        <label>Тип операции</label>
+        <div class="toggle-group" id="depOpToggle">
+          <div class="toggle-opt active" data-optype="in">Пополнение</div>
+          <div class="toggle-opt" data-optype="out">Снятие</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Сумма, USDT</label>
+          <input type="number" id="depOpAmount" value="100" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>Комментарий</label>
+          <input type="text" id="depOpComment" placeholder="напр. на личные нужды">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="addDepOpBtn" style="width:100%;">+ Добавить операцию</button>
+    </div>
+
+    <div class="card" id="depOpsList"><div class="empty">Операций сегодня нет</div></div>
+
+    <div class="card">
+      <div class="section-title">🧊 Заморожено</div>
+      <div class="note" style="margin-top:-6px;">Апелляция, Т+1 блокировка, жалоба и т.п. — деньги временно недоступны, но не потеряны.</div>
+      <div class="row2" style="margin-top:10px;">
+        <div class="field">
+          <label>Сумма, USDT</label>
+          <input type="number" id="frozenAmount" value="100" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>Комментарий</label>
+          <input type="text" id="frozenComment" placeholder="напр. апелляция #123">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="addFrozenBtn" style="width:100%;">🧊 Заморозить</button>
+    </div>
+
+    <div class="card">
+      <div class="hist-summary">
+        <div class="stat"><div class="k">Всего заморожено</div><div class="v" id="frozenTotal">0 USDT</div></div>
+      </div>
+    </div>
+
+    <div class="card" id="frozenList"><div class="empty">Заморозок нет</div></div>
+  </div>
+
+  <!-- ===================== DAYS / ИТОГИ ===================== -->
+  <div class="panel" id="tab-reports">
+
+    <div class="card" id="dayStatusCard">
+      <div class="section-title">Текущий день</div>
+      <div class="day-status-row">
+        <div>
+          <div class="day-status-label" id="dayStatusLabel">Нет открытого дня</div>
+          <div class="day-status-sub" id="dayStatusSub"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="closeDayBtn" style="width:100%;margin-top:10px;">▶️ Открыть новый день</button>
+    </div>
+
+    <div class="period-btns" id="reportsSubNav" style="margin-bottom:12px;">
+      <div class="period-btn active" data-subview="overview">Обзор</div>
+      <div class="period-btn" data-subview="analytics">Аналитика</div>
+      <div class="period-btn" data-subview="data">Данные</div>
+    </div>
+
+    <!-- ---------- Обзор ---------- -->
+    <div class="reports-subview active" data-subview="overview">
+
+      <div class="card">
+        <div class="section-title">Сейчас <span class="section-title-note">не зависит от периода выше</span></div>
+        <div class="overview-grid">
+          <div class="overview-item">
+            <div class="overview-icon">💸</div>
+            <div class="overview-label">Расходы за сегодня</div>
+            <div class="overview-value neg" id="totalExpensesAllTime">0 USDT</div>
+          </div>
+          <div class="overview-item">
+            <div class="overview-icon">❌</div>
+            <div class="overview-label">Потери за сегодня</div>
+            <div class="overview-value neg" id="totalLossesAllTime">0 USDT</div>
+          </div>
+          <div class="overview-item">
+            <div class="overview-icon">🧊</div>
+            <div class="overview-label">Заморожено сейчас</div>
+            <div class="overview-value" id="totalFrozenNow">0 USDT</div>
+          </div>
+          <div class="overview-item">
+            <div class="overview-icon">🏦</div>
+            <div class="overview-label">Резерв</div>
+            <div class="overview-value" id="reserveTotal">0 USDT</div>
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px;margin-bottom:6px;">
+          <label>Откладывать в резерв, % от прибыли сделки</label>
+          <input type="number" id="reservePct" value="0" min="0" max="100" step="any" inputmode="decimal" placeholder="напр. 10">
+        </div>
+        <div class="reserve-hint">При каждой прибыльной сделке часть прибыли откладывается в отдельный виртуальный резерв — он не влияет на остальные расчёты баланса.</div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Дни</div>
+        <div class="cal-header">
+          <div class="cal-nav-btn" id="calPrevBtn">‹</div>
+          <div class="cal-label" id="calLabel"></div>
+          <div class="cal-nav-btn" id="calNextBtn">›</div>
+        </div>
+        <div class="cal-dow-row">
+          <div class="cal-dow">Пн</div><div class="cal-dow">Вт</div><div class="cal-dow">Ср</div>
+          <div class="cal-dow">Чт</div><div class="cal-dow">Пт</div><div class="cal-dow">Сб</div><div class="cal-dow">Вс</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="note" style="margin-top:12px;">Отчёты по дням (нажми, чтобы открыть)</div>
+        <div id="daysList" style="margin-top:8px;"><div class="empty">Пока нет завершённых дней</div></div>
+      </div>
+
+    </div>
+
+    <!-- ---------- Аналитика ---------- -->
+    <div class="reports-subview" data-subview="analytics">
+
+      <div class="card">
+        <div class="section-title">Период</div>
+        <div class="row2">
+          <div class="field">
+            <label>С</label>
+            <input type="date" id="rangeFrom">
+          </div>
+          <div class="field">
+            <label>По</label>
+            <input type="date" id="rangeTo">
+          </div>
+        </div>
+        <button class="btn btn-secondary" id="resetRangeBtn" style="width:100%;">📅 Сегодня</button>
+      </div>
+
+      <div class="result">
+        <div class="result-main">
+          <div class="label" id="periodLabel">Профит за период, USDT</div>
+          <div class="value" id="periodProfitUsdt">0 USDT</div>
+          <div class="value2" id="periodProfitRub">≈ 0 ₽</div>
+          <div class="result-sub" id="periodDealsCount"></div>
+          <div class="period-compare muted" id="periodCompare"></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k">Расходы</div><div class="v" id="periodExpenses">0 USDT</div></div>
+          <div class="stat"><div class="k">Потери</div><div class="v" id="periodLosses">0 USDT</div></div>
+          <div class="stat"><div class="k">Чистыми (USDT)</div><div class="v" id="periodNet">0 USDT</div></div>
+        </div>
+
+        <div class="goal-block">
+          <div class="field" style="margin-bottom:10px;">
+            <label>Цель на этот период, USDT</label>
+            <input type="number" id="goalTarget" step="any" inputmode="decimal" placeholder="напр. 300">
+          </div>
+          <div class="goal-progress-bar"><div class="goal-progress-fill" id="goalProgressFill"></div></div>
+          <div class="goal-progress-text" id="goalProgressText">Задай цель, чтобы видеть прогресс</div>
+        </div>
+      </div>
+
+      <div class="card" id="periodCurrencyCard">
+        <div class="section-title" id="periodCurrencyToggle" style="cursor:pointer;">Метрики по валютам за период ▾</div>
+        <div id="periodCurrencyMetrics" style="display:none;"><div class="empty">Нет сделок за выбранный период</div></div>
+      </div>
+
+      <div class="card" id="timeOfDayCard">
+        <div class="section-title" id="timeOfDayToggle" style="cursor:pointer;">Прибыльность по времени суток ▾</div>
+        <div id="timeOfDayList" style="display:none;"><div class="empty">Нет сделок за выбранный период</div></div>
+      </div>
+
+    </div>
+
+    <!-- ---------- Данные ---------- -->
+    <div class="reports-subview" data-subview="data">
+
+      <div class="card">
+        <div class="section-title">Экспорт и импорт</div>
+        <button class="btn btn-primary" id="exportExcelBtn" style="width:100%;">📊 Скачать Excel за этот период</button>
+        <div class="note" id="exportHint">Экспортирует сделки, расходы и итоги по дням за выбранные даты.</div>
+        <button class="btn btn-secondary" id="importExcelBtn" style="width:100%;margin-top:10px;">⬆️ Импорт из Excel</button>
+        <input type="file" id="importExcelFile" accept=".xlsx,.xls" style="display:none;">
+        <div class="note">Загрузи ранее экспортированный файл — сделки, расходы и депозит подтянутся в архив, сгруппированные по дате.</div>
+
+        <button class="btn btn-secondary" id="exportJsonBtn" style="width:100%;margin-top:14px;">💾 Полный бэкап (JSON)</button>
+        <div class="note">Сохраняет вообще всё: текущий день, архив дней, заморозки, резерв и настройки — удобно перед сменой телефона.</div>
+        <button class="btn btn-secondary" id="importJsonBtn" style="width:100%;margin-top:10px;">⬆️ Восстановить из бэкапа JSON</button>
+        <input type="file" id="importJsonFile" accept=".json" style="display:none;">
+        <div class="note">Полностью заменит текущие данные содержимым выбранного файла.</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===================== START NEW DAY MODAL ===================== -->
+  <div class="modal-overlay" id="startDayModal">
+    <div class="modal-box">
+      <div class="section-title">Открыть новый день</div>
+      <div class="field">
+        <label>Название дня</label>
+        <input type="text" id="sdLabel" placeholder="напр. 06.09.2026 или Ночная смена">
+      </div>
+      <div class="field">
+        <label>Комментарий (необязательно)</label>
+        <input type="text" id="sdComment" placeholder="напр. работал с обеда">
+      </div>
+      <div class="field">
+        <label>Начальный депозит, USDT</label>
+        <input type="number" id="sdStartDeposit" step="any" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="sdCancelBtn">Отмена</button>
+        <button class="btn btn-primary" id="sdStartBtn">▶️ Начать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== DAY DETAIL OVERLAY ===================== -->
+  <div class="overlay" id="dayOverlay">
+    <div class="overlay-header">
+      <div class="back-btn" id="dayOverlayBack">←</div>
+      <h2 id="dayOverlayTitle">Детали дня</h2>
+      <button class="hist-del" id="dayOverlayDelete" title="Удалить день">🗑</button>
+    </div>
+    <div class="note" id="dayOverlayComment" style="margin:-8px 0 12px;"></div>
+
+    <div class="result">
+      <div class="stats">
+        <div class="stat"><div class="k">Сделок</div><div class="v" id="dodDeals">0</div></div>
+        <div class="stat"><div class="k">Профит USDT</div><div class="v" id="dodProfitUsdt">0 USDT</div></div>
+        <div class="stat"><div class="k">Профит в валюте</div><div class="v" id="dodProfitRub">0 ₽</div></div>
+        <div class="stat"><div class="k">Расходы</div><div class="v" id="dodExpenses">0 USDT</div></div>
+        <div class="stat"><div class="k">Потери</div><div class="v" id="dodLosses">0 USDT</div></div>
+        <div class="stat"><div class="k">🧊 Заморожено на закрытии</div><div class="v" id="dodFrozenAtClose">0 USDT</div></div>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="result-main">
+        <div class="label">Баланс депозита на конец дня</div>
+        <div class="value" id="dodDepositBalance">0 USDT</div>
+        <div class="result-sub" id="dodDepositBreakdown"></div>
+      </div>
+    </div>
+
+    <div class="detail-subtitle">Сделки</div>
+    <div class="card" id="dodDealsList"><div class="empty">Сделок в этот день нет</div></div>
+
+    <div class="detail-subtitle">Расходы</div>
+    <div class="card" id="dodExpList"><div class="empty">Расходов в этот день нет</div></div>
+
+    <div class="card">
+      <div class="section-title">Забыл вписать расход?</div>
+      <div class="row2">
+        <div class="field">
+          <label>Сеть / тип</label>
+          <select id="dodExpNetwork">
+            <option value="TRC20">TRC20 (Tron)</option>
+            <option value="TON">TON</option>
+            <option value="BEP20">BEP20 (BSC)</option>
+            <option value="ERC20">ERC20 (Ethereum)</option>
+            <option value="Другое">Другое</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Сумма, USDT</label>
+          <input type="number" id="dodExpAmount" value="1" step="any" inputmode="decimal">
+        </div>
+      </div>
+      <div class="field">
+        <label>Комментарий (необязательно)</label>
+        <input type="text" id="dodExpComment" placeholder="напр. перевод с Bybit">
+      </div>
+      <button class="btn btn-primary" id="dodAddExpBtn" style="width:100%;">+ Добавить расход в этот день</button>
+    </div>
+
+    <div class="detail-subtitle">Потери (проигранные апелляции)</div>
+    <div class="card" id="dodLossesList"><div class="empty">Потерь в этот день нет</div></div>
+
+    <div class="detail-subtitle">Операции с депозитом</div>
+    <div class="card" id="dodDepOpsList"><div class="empty">Операций в этот день нет</div></div>
+
+    <div class="card">
+      <div class="section-title">Забыл операцию с депозитом?</div>
+      <div class="field">
+        <label>Тип операции</label>
+        <div class="toggle-group" id="dodOpToggle">
+          <div class="toggle-opt active" data-optype="in">Пополнение</div>
+          <div class="toggle-opt" data-optype="out">Снятие</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Сумма, USDT</label>
+          <input type="number" id="dodOpAmount" value="100" step="any" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>Комментарий</label>
+          <input type="text" id="dodOpComment" placeholder="напр. на личные нужды">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="dodAddOpBtn" style="width:100%;">+ Добавить операцию в этот день</button>
+    </div>
+  </div>
+
+  <!-- ===================== CUSTOM CONFIRM/ALERT MODAL ===================== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <div class="modal-message" id="modalMessage"></div>
+      <div class="btn-row" id="modalBtnRow">
+        <button class="btn btn-secondary" id="modalCancelBtn">Отмена</button>
+        <button class="btn btn-primary" id="modalOkBtn">Да</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CURRENCY PICKER MODAL ===================== -->
+  <div class="modal-overlay" id="currencyPickerOverlay">
+    <div class="modal-box currency-picker-box">
+      <div class="currency-picker-head">
+        <div class="currency-picker-title">Выбери валюту</div>
+        <button type="button" class="currency-picker-close" id="currencyPickerClose">✕</button>
+      </div>
+      <input type="text" id="currencyPickerSearch" class="currency-picker-search" placeholder="Поиск: код или название" inputmode="search" autocomplete="off">
+      <div class="currency-picker-list" id="currencyPickerList"></div>
+    </div>
+  </div>
+
+  <!-- ===================== BOT SIGNUP PROMPT MODAL ===================== -->
+  <div class="modal-overlay" id="botPromptModal">
+    <div class="modal-box">
+      <div class="currency-picker-head" style="margin-bottom:12px;">
+        <div class="currency-picker-title">Отметься в боте</div>
+        <button type="button" class="currency-picker-close" id="botPromptCloseBtn">✕</button>
+      </div>
+      <div class="modal-message">Чтобы не пропускать обновления и важные сообщения — нажми кнопку, бот отметит тебя автоматически.</div>
+      <a href="https://t.me/amacy_p2p_bot?start=calc" target="_blank" rel="noopener" class="tg-btn" id="botPromptGoBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.5 3.5L2.5 11L9 13.5M21.5 3.5L18.5 20.5L9 13.5M21.5 3.5L9 13.5M9 13.5V19.5L12.5 16" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Открыть бота
+      </a>
+    </div>
+  </div>
+
+  <a href="https://t.me/camalyr" target="_blank" rel="noopener" class="tg-btn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21.5 3.5L2.5 11L9 13.5M21.5 3.5L18.5 20.5L9 13.5M21.5 3.5L9 13.5M9 13.5V19.5L12.5 16" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Написать в Telegram
+  </a>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ---------- custom confirm/alert (native browser dialogs are unreliable inside in-app webviews) ----------
+function showConfirm(message){
+  return new Promise(resolve => {
+    $('modalMessage').textContent = message;
+    $('modalBtnRow').style.display = 'flex';
+    $('modalCancelBtn').style.display = 'block';
+    $('modalOkBtn').textContent = 'Да';
+    $('modalOverlay').classList.add('open');
+    const cleanup = (result) => {
+      $('modalOverlay').classList.remove('open');
+      $('modalOkBtn').onclick = null;
+      $('modalCancelBtn').onclick = null;
+      resolve(result);
+    };
+    $('modalOkBtn').onclick = () => cleanup(true);
+    $('modalCancelBtn').onclick = () => cleanup(false);
+  });
+}
+function showAlert(message){
+  return new Promise(resolve => {
+    $('modalMessage').textContent = message;
+    $('modalCancelBtn').style.display = 'none';
+    $('modalOkBtn').textContent = 'Понятно';
+    $('modalOverlay').classList.add('open');
+    const cleanup = () => {
+      $('modalOverlay').classList.remove('open');
+      $('modalOkBtn').onclick = null;
+      $('modalCancelBtn').style.display = 'block';
+      resolve();
+    };
+    $('modalOkBtn').onclick = cleanup;
+  });
+}
+
+// ---------- storage helpers ----------
+const OLD_HISTORY_KEY = 'p2p_calc_history_v2';
+const OLD_EXPENSES_KEY = 'p2p_calc_expenses_v1';
+const OLD_DEPOSITS_KEY = 'p2p_calc_deposits_v1';
+const OLD_DEPOSIT_OPS_KEY = 'p2p_calc_deposit_ops_v1';
+const OLD_CLOSED_DAYS_KEY = 'p2p_calc_closed_days_v1';
+
+const STORAGE_KEY = 'p2p_calc_state_v2';
+const CURRENT_SESSION_KEY = 'p2p_session_current_v1';
+const ARCHIVE_KEY = 'p2p_session_archive_v1';
+const MIGRATION_FLAG_KEY = 'p2p_migrated_to_sessions_v1';
+
+function loadJSON(key, fallback){ try{ const v = JSON.parse(localStorage.getItem(key)); return v === null || v === undefined ? fallback : v; }catch(e){ return fallback; } }
+function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+
+function dayKey(ts){ const d = new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function dayLabel(key){ const [y,m,d] = key.split('-'); return `${d}.${m}.${y}`; }
+function todayKey(){ return dayKey(Date.now()); }
+function isToday(ts){ const d = new Date(ts), n = new Date(); return d.toDateString() === n.toDateString(); }
+
+// ---------- session helpers ----------
+function getCurrentSession(){ return loadJSON(CURRENT_SESSION_KEY, null); }
+function saveCurrentSession(s){ saveJSON(CURRENT_SESSION_KEY, s); }
+function getArchive(){ return loadJSON(ARCHIVE_KEY, []); }
+function saveArchive(arr){ saveJSON(ARCHIVE_KEY, arr); }
+
+function sessionBalanceParts(session){
+  if(!session) return {start:0, profitUsdt:0, profitRub:0, feesUsdt:0, inUsdt:0, outUsdt:0, lossesUsdt:0, balance:0, dealsCount:0};
+  const profitUsdt = session.deals.reduce((s,e)=>s+(e.profitUsdt||0),0);
+  const profitRub = session.deals.reduce((s,e)=>s+(e.profit||0),0);
+  const feesUsdt = session.expenses.reduce((s,e)=>s+e.amount,0);
+  const inUsdt = session.depositOps.filter(o=>o.type==='in').reduce((s,o)=>s+o.amount,0);
+  const outUsdt = session.depositOps.filter(o=>o.type==='out').reduce((s,o)=>s+o.amount,0);
+  const lossesUsdt = (session.losses||[]).reduce((s,l)=>s+l.amount,0);
+  const balance = (session.startDeposit||0) + profitUsdt - feesUsdt + inUsdt - outUsdt - lossesUsdt;
+  return {start: session.startDeposit||0, profitUsdt, profitRub, feesUsdt, inUsdt, outUsdt, lossesUsdt, balance, dealsCount: session.deals.length};
+}
+
+// ---------- bot signup prompt (shows on up to 2 distinct calendar days, then never again) ----------
+const BOT_PROMPT_KEY = 'p2p_bot_prompt_v1';
+function checkBotPrompt(){
+  try{
+    const state = JSON.parse(localStorage.getItem(BOT_PROMPT_KEY) || '{}');
+    const shownDates = state.shownDates || [];
+    if(state.clicked) return;
+    const todayStr = new Date().toDateString();
+    if(shownDates.includes(todayStr)) return;
+    if(shownDates.length >= 2) return;
+    shownDates.push(todayStr);
+    localStorage.setItem(BOT_PROMPT_KEY, JSON.stringify({shownDates, clicked: !!state.clicked}));
+    $('botPromptModal').classList.add('open');
+  }catch(e){}
+}
+document.getElementById('botPromptGoBtn').addEventListener('click', () => {
+  try{
+    const state = JSON.parse(localStorage.getItem(BOT_PROMPT_KEY) || '{}');
+    state.clicked = true;
+    localStorage.setItem(BOT_PROMPT_KEY, JSON.stringify(state));
+  }catch(e){}
+  $('botPromptModal').classList.remove('open');
+});
+document.getElementById('botPromptCloseBtn').addEventListener('click', () => {
+  $('botPromptModal').classList.remove('open');
+});
+
+// ---------- frozen funds (global, not tied to any single day) ----------
+const FROZEN_KEY = 'p2p_frozen_v1';
+function getFrozen(){ return loadJSON(FROZEN_KEY, []); }
+function saveFrozen(arr){ saveJSON(FROZEN_KEY, arr); }
+function totalFrozen(){ return getFrozen().reduce((s,f)=>s+f.amount,0); }
+
+// ---------- reserve / set-aside (global, separate virtual balance) ----------
+const RESERVE_KEY = 'p2p_reserve_v1';
+function getReserve(){ return loadJSON(RESERVE_KEY, {total:0}); }
+function saveReserve(r){ saveJSON(RESERVE_KEY, r); }
+
+// ---------- one-time migration from old calendar-day model ----------
+function migrateOldDataIfNeeded(){
+  if(loadJSON(MIGRATION_FLAG_KEY, false)) return;
+
+  const oldHistory = loadJSON(OLD_HISTORY_KEY, []);
+  const oldExpenses = loadJSON(OLD_EXPENSES_KEY, []);
+  const oldDeposits = loadJSON(OLD_DEPOSITS_KEY, {});
+  const oldDepositOps = loadJSON(OLD_DEPOSIT_OPS_KEY, []);
+  const oldClosed = loadJSON(OLD_CLOSED_DAYS_KEY, {});
+
+  const hasOldData = oldHistory.length || oldExpenses.length || Object.keys(oldDeposits).length || oldDepositOps.length || Object.keys(oldClosed).length;
+  if(!hasOldData){ saveJSON(MIGRATION_FLAG_KEY, true); return; }
+
+  const closedKeys = Object.keys(oldClosed).sort();
+  const archive = [];
+  closedKeys.forEach(k => {
+    const deals = oldHistory.filter(e => dayKey(e.ts) === k);
+    const expenses = oldExpenses.filter(e => dayKey(e.ts) === k);
+    const depositOps = oldDepositOps.filter(e => dayKey(e.ts) === k);
+    const startDeposit = oldDeposits[k] || 0;
+    const sessionLike = { id: k + '-' + Math.random().toString(36).slice(2,8), label: dayLabel(k), comment: '', startDeposit, startedAt: null, deals, expenses, depositOps, losses: [] };
+    const parts = sessionBalanceParts(sessionLike);
+    archive.push({ ...sessionLike, closedAt: null, endBalance: +parts.balance.toFixed(2) });
+  });
+  archive.reverse(); // newest first (closedKeys was ascending)
+  saveArchive(archive);
+
+  const remainingDeals = oldHistory.filter(e => !oldClosed[dayKey(e.ts)]);
+  const remainingExpenses = oldExpenses.filter(e => !oldClosed[dayKey(e.ts)]);
+  const remainingDepositOps = oldDepositOps.filter(e => !oldClosed[dayKey(e.ts)]);
+  if(remainingDeals.length || remainingExpenses.length || remainingDepositOps.length){
+    const tk = todayKey();
+    const allTs = [...remainingDeals, ...remainingExpenses, ...remainingDepositOps].map(e=>e.ts);
+    const session = {
+      id: Date.now(),
+      label: dayLabel(tk),
+      comment: '',
+      startDeposit: oldDeposits[tk] || 0,
+      startedAt: allTs.length ? Math.min(...allTs) : Date.now(),
+      deals: remainingDeals, expenses: remainingExpenses, depositOps: remainingDepositOps, losses: []
+    };
+    saveCurrentSession(session);
+  }
+
+  saveJSON(MIGRATION_FLAG_KEY, true);
+}
+
+// ---------- theme ----------
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  $('themeToggle').textContent = theme === 'light' ? '☀️' : '🌙';
+}
+$('themeToggle').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(cur === 'light' ? 'dark' : 'light');
+  saveState();
+});
+
+function saveState(){
+  saveJSON(STORAGE_KEY, {
+    theme: document.documentElement.getAttribute('data-theme') || 'dark',
+    currency: currentCurrency,
+    fiatCurrency: currentFiatCurrency,
+    lastRatesByCurrency: lastRatesByCurrency,
+    amount: $('amount').value,
+    rateSell: $('rateSell').value,
+    rateBuy: $('rateBuy').value,
+    feePct: $('feePct').value,
+    feeFlat: $('feeFlat').value,
+    minThreshold: $('minThreshold').value,
+    goalTarget: $('goalTarget').value,
+    reservePct: $('reservePct').value,
+  });
+}
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    $('dayOverlay').classList.remove('open');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    $('tab-' + tab.dataset.tab).classList.add('active');
+    if(tab.dataset.tab === 'history') renderHistory();
+    if(tab.dataset.tab === 'expenses') renderExpenses();
+    if(tab.dataset.tab === 'deposit') renderDeposit();
+    if(tab.dataset.tab === 'reports') renderReportsTab();
+  });
+});
+
+// ---------- fiat currency (pair) selection ----------
+// Top ~20 fiat currencies actually used in P2P crypto arbitrage (RUB/TRY/INR/KZT plus the
+// next most common ones traded on P2P desks like Bybit P2P).
+const CURRENCIES = {
+  RUB: { symbol: '₽',    name: 'Российский рубль' },
+  TRY: { symbol: '₺',    name: 'Турецкая лира' },
+  INR: { symbol: '₹',    name: 'Индийская рупия' },
+  KZT: { symbol: '₸',    name: 'Казахстанский тенге' },
+  USD: { symbol: '$',    name: 'Доллар США' },
+  EUR: { symbol: '€',    name: 'Евро' },
+  UAH: { symbol: '₴',    name: 'Украинская гривна' },
+  AED: { symbol: 'د.إ',  name: 'Дирхам ОАЭ' },
+  NGN: { symbol: '₦',    name: 'Нигерийская найра' },
+  VND: { symbol: '₫',    name: 'Вьетнамский донг' },
+  PKR: { symbol: '₨',    name: 'Пакистанская рупия' },
+  BRL: { symbol: 'R$',   name: 'Бразильский реал' },
+  ARS: { symbol: 'AR$',  name: 'Аргентинское песо' },
+  COP: { symbol: 'COL$', name: 'Колумбийское песо' },
+  MXN: { symbol: 'MX$',  name: 'Мексиканское песо' },
+  PHP: { symbol: '₱',    name: 'Филиппинское песо' },
+  THB: { symbol: '฿',    name: 'Тайский бат' },
+  IDR: { symbol: 'Rp',   name: 'Индонезийская рупия' },
+  EGP: { symbol: 'E£',   name: 'Египетский фунт' },
+  ZAR: { symbol: 'R',    name: 'Южноафриканский рэнд' },
+};
+function currencySymbol(code){ return (CURRENCIES[code] || CURRENCIES.RUB).symbol; }
+
+let currentFiatCurrency = 'RUB';
+function updateFiatLabels(){
+  const sym = currencySymbol(currentFiatCurrency);
+  $('amountLabel').textContent = currentCurrency === 'rub' ? `Сумма сделки, ${sym}` : 'Сумма сделки, USDT';
+  $('rateSellLabel').textContent = `Курс продажи (мой, ${sym})`;
+  $('rateBuyLabel').textContent = `Курс покупки (${sym})`;
+  $('feeFlatLabel').textContent = `Комиссия фикс., ${sym}`;
+  document.querySelector('#currToggle .toggle-opt[data-curr="rub"]').textContent = `В ${sym}`;
+  $('fiatCurrencyBtn').textContent = `${sym} ${currentFiatCurrency} ▾`;
+}
+let lastRatesByCurrency = {};
+
+function selectFiatCurrency(code){
+  if(!CURRENCIES[code] || code === currentFiatCurrency) return;
+  // remember the rates we were just using for the currency we're leaving
+  lastRatesByCurrency[currentFiatCurrency] = {
+    rateSell: $('rateSell').value,
+    rateBuy: $('rateBuy').value,
+  };
+  currentFiatCurrency = code;
+  // restore whatever rates were last used for this currency, if any
+  const saved = lastRatesByCurrency[currentFiatCurrency];
+  if(saved){ $('rateSell').value = saved.rateSell; $('rateBuy').value = saved.rateBuy; }
+  updateFiatLabels();
+  calc(); saveState();
+}
+
+// ---------- currency picker modal (search + list, replaces the old 4-button row) ----------
+function renderCurrencyPickerList(filterText){
+  const list = $('currencyPickerList');
+  const q = (filterText || '').trim().toLowerCase();
+  const codes = Object.keys(CURRENCIES).filter(code => {
+    if(!q) return true;
+    const c = CURRENCIES[code];
+    return code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q);
+  });
+  if(codes.length === 0){
+    list.innerHTML = '<div class="currency-picker-empty">Ничего не найдено</div>';
+    return;
+  }
+  list.innerHTML = codes.map(code => {
+    const c = CURRENCIES[code];
+    const isActive = code === currentFiatCurrency;
+    return `
+      <div class="currency-picker-item ${isActive ? 'active' : ''}" data-code="${code}">
+        <div class="cp-symbol">${c.symbol}</div>
+        <div class="cp-info">
+          <div class="cp-code">${code}</div>
+          <div class="cp-name">${c.name}</div>
+        </div>
+        ${isActive ? '<div class="cp-check">✓</div>' : ''}
+      </div>
+    `;
+  }).join('');
+  list.querySelectorAll('.currency-picker-item').forEach(item => {
+    item.addEventListener('click', () => {
+      selectFiatCurrency(item.dataset.code);
+      $('currencyPickerOverlay').classList.remove('open');
+    });
+  });
+}
+function openCurrencyPicker(){
+  $('currencyPickerSearch').value = '';
+  renderCurrencyPickerList('');
+  $('currencyPickerOverlay').classList.add('open');
+  setTimeout(() => $('currencyPickerSearch').focus(), 50);
+}
+$('fiatCurrencyBtn').addEventListener('click', openCurrencyPicker);
+$('currencyPickerClose').addEventListener('click', () => $('currencyPickerOverlay').classList.remove('open'));
+$('currencyPickerOverlay').addEventListener('click', (e) => {
+  if(e.target === $('currencyPickerOverlay')) $('currencyPickerOverlay').classList.remove('open');
+});
+$('currencyPickerSearch').addEventListener('input', (e) => renderCurrencyPickerList(e.target.value));
+
+// ---------- currency toggle for amount ----------
+let currentCurrency = 'rub';
+document.querySelectorAll('#currToggle .toggle-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#currToggle .toggle-opt').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    currentCurrency = opt.dataset.curr;
+    updateFiatLabels();
+    calc(); saveState();
+  });
+});
+
+// ---------- presets ----------
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = $(btn.dataset.target);
+    const delta = parseFloat(btn.dataset.delta);
+    target.value = (parseFloat(target.value || 0) + delta).toFixed(2);
+    calc(); saveState();
+  });
+});
+
+// ---------- format ----------
+function fmt(n, code){ return n.toLocaleString('ru-RU', {maximumFractionDigits: 2, minimumFractionDigits: 2}) + ' ' + currencySymbol(code || currentFiatCurrency); }
+function fmtUsdt(n){ return n.toLocaleString('ru-RU', {maximumFractionDigits: 2, minimumFractionDigits: 2}) + ' USDT'; }
+function fmtPct(n){ return n.toLocaleString('ru-RU', {maximumFractionDigits: 2, minimumFractionDigits: 2}) + '%'; }
+function fmtRate(n){ return n.toLocaleString('ru-RU', {maximumFractionDigits: 3, minimumFractionDigits: 2}); }
+
+// ---------- calc ----------
+let lastResult = null;
+
+function getAmountUSDT(rateBuy){
+  const raw = parseFloat($('amount').value) || 0;
+  if(currentCurrency === 'rub'){ return rateBuy !== 0 ? raw / rateBuy : 0; }
+  return raw;
+}
+
+function calc(){
+  const rateBuy = parseFloat($('rateBuy').value) || 0;
+  const feePct = parseFloat($('feePct').value) || 0;
+  const feeFlat = parseFloat($('feeFlat').value) || 0;
+  const minThreshold = parseFloat($('minThreshold').value) || 0;
+
+  const amountUsdt = getAmountUSDT(rateBuy);
+  const cost = amountUsdt * rateBuy;
+
+  const raw = parseFloat($('amount').value) || 0;
+  if(currentCurrency === 'rub'){
+    $('convHint').textContent = rateBuy !== 0 ? `≈ ${fmtUsdt(amountUsdt)} по курсу покупки` : '';
+  } else {
+    $('convHint').textContent = `≈ ${fmt(raw * rateBuy)} по курсу покупки`;
+  }
+
+  const rateSell = parseFloat($('rateSell').value) || 0;
+  const revenue = amountUsdt * rateSell;
+  const feeAmount = revenue * (feePct/100) + feeFlat;
+  const netProfitRub = (revenue - feeAmount) - cost;
+  const profitUsdtNow = rateBuy !== 0 ? netProfitRub / rateBuy : 0;
+  $('profitUsdtValue').textContent = fmtUsdt(profitUsdtNow);
+  $('profitUsdtValue').classList.toggle('negative', profitUsdtNow < 0);
+  $('profitValue').textContent = '≈ ' + fmt(netProfitRub);
+
+  const spread = revenue - cost;
+  const spreadPct = cost !== 0 ? (spread/cost)*100 : 0;
+  const profitPct = cost !== 0 ? (netProfitRub/cost)*100 : 0;
+  const profitUsdt = profitUsdtNow;
+
+  $('revenueValue').textContent = fmt(revenue);
+  $('costValue').textContent = fmt(cost);
+  $('spreadValue').textContent = fmt(spread);
+  $('spreadPctValue').textContent = fmtPct(spreadPct);
+  $('profitPctLabel').textContent = 'после комиссии ' + fmtPct(profitPct) + ' от суммы покупки';
+
+  const badge = $('thresholdBadge');
+  if(profitPct < 0){ badge.textContent = 'Убыток'; badge.className = 'badge bad'; }
+  else if(profitPct < minThreshold){ badge.textContent = 'Ниже порога'; badge.className = 'badge warn'; }
+  else { badge.textContent = 'Сделка в плюсе'; badge.className = 'badge good'; }
+
+  const rateLinkSpread = document.getElementById('rateLinkSpread');
+  if(rateLinkSpread) rateLinkSpread.textContent = 'спред ' + fmtPct(spreadPct);
+
+  lastResult = {amount: amountUsdt, rateBuy, rateSell, feePct, feeFlat, revenue, cost, spread, spreadPct,
+    profit: netProfitRub, profitUsdt, profitPct, currency: currentFiatCurrency};
+
+  updateDealsToGoalHint(profitUsdt);
+}
+
+function updateDealsToGoalHint(profitUsdtPerDeal){
+  const hint = $('dealsToGoalHint');
+  const goal = parseFloat($('goalTarget').value) || 0;
+  if(goal <= 0 || profitUsdtPerDeal <= 0){ hint.textContent = ''; return; }
+  const session = getCurrentSession();
+  const earnedToday = session ? session.deals.reduce((s,e)=>s+(e.profitUsdt||0),0) : 0;
+  const remaining = goal - earnedToday;
+  if(remaining <= 0){ hint.textContent = `🎉 Цель на сегодня уже выполнена (${fmtUsdt(earnedToday)} из ${fmtUsdt(goal)})`; return; }
+  const dealsNeeded = Math.ceil(remaining / profitUsdtPerDeal);
+  hint.textContent = `Если сделки как эта — нужно ещё ~${dealsNeeded} шт. до цели ${fmtUsdt(goal)} (сейчас ${fmtUsdt(earnedToday)})`;
+}
+
+// ---------- mini currency converter ----------
+$('converterToggle').addEventListener('click', () => {
+  const body = $('converterBody');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  $('converterToggle').textContent = 'Мини-конвертер валют ' + (isOpen ? '▾' : '▴');
+  if(!isOpen) renderConverter();
+});
+
+// ---------- Отчёты: collapsible cards (метрики по валютам / время суток) ----------
+$('periodCurrencyToggle').addEventListener('click', () => {
+  const body = $('periodCurrencyMetrics');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  $('periodCurrencyToggle').textContent = 'Метрики по валютам за период ' + (isOpen ? '▾' : '▴');
+});
+$('timeOfDayToggle').addEventListener('click', () => {
+  const body = $('timeOfDayList');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  $('timeOfDayToggle').textContent = 'Прибыльность по времени суток ' + (isOpen ? '▾' : '▴');
+});
+
+// ---------- Отчёты: sub-navigation (Обзор / Аналитика / Данные) ----------
+function showReportsSubview(name){
+  document.querySelectorAll('#reportsSubNav .period-btn').forEach(b => b.classList.toggle('active', b.dataset.subview === name));
+  document.querySelectorAll('.reports-subview').forEach(v => v.classList.toggle('active', v.dataset.subview === name));
+}
+document.querySelectorAll('#reportsSubNav .period-btn').forEach(btn => {
+  btn.addEventListener('click', () => showReportsSubview(btn.dataset.subview));
+});
+function populateConverterCurrencySelects(){
+  const opts = Object.keys(CURRENCIES).map(code => `<option value="${code}">${CURRENCIES[code].symbol} ${code}</option>`).join('');
+  $('convFromCur').innerHTML = opts;
+  $('convToCur').innerHTML = opts;
+  $('convFromCur').value = 'RUB';
+  $('convToCur').value = 'TRY';
+}
+function renderConverter(){
+  const amount = parseFloat($('convAmount').value) || 0;
+  const fromRate = parseFloat($('convFromRate').value) || 0;
+  const toRate = parseFloat($('convToRate').value) || 0;
+  const fromCur = $('convFromCur').value;
+  const toCur = $('convToCur').value;
+  if(fromRate <= 0 || toRate <= 0){ $('convResult').textContent = 'Заполни оба курса к USDT'; return; }
+  const usdt = amount / fromRate;
+  const converted = usdt * toRate;
+  $('convResult').textContent = `${fmt(amount, fromCur)} ≈ ${fmtUsdt(usdt)} ≈ ${fmt(converted, toCur)}`;
+}
+document.querySelectorAll('#convAmount, #convFromRate, #convToRate, #convFromCur, #convToCur').forEach(el => {
+  el.addEventListener('input', renderConverter);
+  el.addEventListener('change', renderConverter);
+});
+
+document.querySelectorAll('#tab-calc input').forEach(el => {
+  el.addEventListener('input', () => { calc(); saveState(); });
+});
+
+document.getElementById('amountClearBtn').addEventListener('click', () => {
+  $('amount').value = '';
+  calc(); saveState();
+  $('amount').focus();
+});
+
+// ---------- copy ----------
+$('copyBtn').addEventListener('click', () => {
+  if(!lastResult) return;
+  const r = lastResult;
+  const text = `P2P сделка: ${r.amount.toFixed(2)} USDT | продажа ${fmtRate(r.rateSell)} / покупка ${fmtRate(r.rateBuy)} | спред ${fmt(r.spread)} (${fmtPct(r.spreadPct)}) | прибыль ${fmt(r.profit)} / ${fmtUsdt(r.profitUsdt)}`;
+  navigator.clipboard?.writeText(text).then(() => {
+    $('copyBtn').textContent = 'Скопировано';
+    setTimeout(() => $('copyBtn').textContent = 'Копировать', 1200);
+  }).catch(() => {});
+});
+
+// ---------- save deal into current session ----------
+$('saveBtn').addEventListener('click', async () => {
+  if(!lastResult) return;
+  let session = getCurrentSession();
+  if(!session){
+    const ok = await showConfirm('Нет открытого дня. Открыть новый день и сохранить туда эту сделку?');
+    if(!ok) return;
+    session = await startNewDaySession();
+    if(!session) return;
+  }
+  session.deals.unshift({ ...lastResult, ts: Date.now() });
+  saveCurrentSession(session);
+
+  // reserve set-aside: only skim a % off *positive* profit, purely additive tracked-aside number
+  const reservePct = parseFloat($('reservePct').value) || 0;
+  if(reservePct > 0 && lastResult.profitUsdt > 0){
+    const r = getReserve();
+    r.total = (r.total || 0) + (lastResult.profitUsdt * reservePct / 100);
+    saveReserve(r);
+    renderOverview();
+  }
+
+  $('saveBtn').textContent = 'Сохранено';
+  setTimeout(() => $('saveBtn').textContent = 'Сохранить сделку', 1000);
+  renderHistory();
+  renderDayStatus();
+  updateDealsToGoalHint(lastResult.profitUsdt);
+});
+
+// ---------- no-session prompt ----------
+function noSessionPromptHTML(msg){
+  return `<div class="empty" style="padding:30px 12px;">
+    <div style="margin-bottom:14px;">${msg}</div>
+    <button class="btn btn-primary no-session-start-btn" style="display:inline-block;width:auto;padding:12px 20px;">▶️ Открыть новый день</button>
+  </div>`;
+}
+function wireNoSessionButton(container, rerender){
+  const btn = container.querySelector('.no-session-start-btn');
+  if(btn) btn.addEventListener('click', async () => {
+    const s = await startNewDaySession();
+    if(s) rerender();
+  });
+}
+
+// ---------- deal card rendering / editing (shared between current session and archived reports) ----------
+function dealCardHTML(e){
+  const d = new Date(e.ts);
+  const time = d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+  const cur = e.currency || 'RUB';
+  return `
+    <div>
+      <div class="profit ${(e.profitUsdt||0)<0?'negative':''}">${fmtUsdt(e.profitUsdt||0)}</div>
+      <div class="profit-usdt">≈ ${fmt(e.profit, cur)}</div>
+      <div class="info">${time} · ${e.amount.toFixed(2)} USDT · ${fmtRate(e.rateSell)}/${fmtRate(e.rateBuy)} ${cur}</div>
+    </div>
+    <div class="item-actions">
+      <button class="hist-edit" data-ts="${e.ts}">✏️</button>
+      <button class="hist-del" data-ts="${e.ts}">✕</button>
+    </div>
+  `;
+}
+function editFormHTML(e){
+  const sym = currencySymbol(e.currency || 'RUB');
+  return `
+    <div class="edit-form" style="width:100%;">
+      <div class="row2">
+        <div class="field"><label>Сумма, USDT</label><input type="number" step="any" class="ef-amount" value="${e.amount}"></div>
+        <div class="field"><label>Курс продажи</label><input type="number" step="any" class="ef-rateSell" value="${e.rateSell}"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Курс покупки</label><input type="number" step="any" class="ef-rateBuy" value="${e.rateBuy}"></div>
+        <div class="field"><label>Комиссия %</label><input type="number" step="any" class="ef-feePct" value="${e.feePct}"></div>
+      </div>
+      <div class="field"><label>Комиссия фикс, ${sym}</label><input type="number" step="any" class="ef-feeFlat" value="${e.feeFlat}"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary ef-cancel">Отмена</button>
+        <button class="btn btn-primary ef-save" data-ts="${e.ts}">Сохранить</button>
+      </div>
+    </div>
+  `;
+}
+function recalcDeal(e){
+  const revenue = e.amount * e.rateSell;
+  const cost = e.amount * e.rateBuy;
+  const feeAmount = revenue * (e.feePct/100) + e.feeFlat;
+  const spread = revenue - cost;
+  const spreadPct = cost !== 0 ? (spread/cost)*100 : 0;
+  const profit = (revenue - feeAmount) - cost;
+  const profitPct = cost !== 0 ? (profit/cost)*100 : 0;
+  const profitUsdt = e.rateBuy !== 0 ? profit / e.rateBuy : 0;
+  return {...e, revenue, cost, spread, spreadPct, profit, profitPct, profitUsdt};
+}
+// getArr()/setArr(newArr): closures the caller supplies to read/write the specific deals array
+// (current session's deals, or one specific archived report's deals)
+function attachDealCardHandlers(container, getArr, setArr, rerender){
+  container.querySelectorAll('.hist-del').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const ok = await showConfirm('Удалить эту сделку?');
+      if(!ok) return;
+      const ts = parseFloat(btn.dataset.ts);
+      const arr = getArr();
+      const idx = arr.findIndex(x => x.ts === ts);
+      if(idx > -1){ arr.splice(idx,1); setArr(arr); }
+      rerender();
+    });
+  });
+  container.querySelectorAll('.hist-edit').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ts = parseFloat(btn.dataset.ts);
+      const arr = getArr();
+      const entry = arr.find(x => x.ts === ts);
+      if(!entry) return;
+      const card = btn.closest('.hist-item');
+      card.innerHTML = editFormHTML(entry);
+      card.querySelector('.ef-cancel').addEventListener('click', () => rerender());
+      card.querySelector('.ef-save').addEventListener('click', () => {
+        const updated = recalcDeal({
+          ...entry,
+          amount: parseFloat(card.querySelector('.ef-amount').value) || 0,
+          rateSell: parseFloat(card.querySelector('.ef-rateSell').value) || 0,
+          rateBuy: parseFloat(card.querySelector('.ef-rateBuy').value) || 0,
+          feePct: parseFloat(card.querySelector('.ef-feePct').value) || 0,
+          feeFlat: parseFloat(card.querySelector('.ef-feeFlat').value) || 0,
+        });
+        const arr2 = getArr();
+        const idx = arr2.findIndex(x => x.ts === ts);
+        if(idx > -1){ arr2[idx] = updated; setArr(arr2); }
+        rerender();
+      });
+    });
+  });
+}
+
+// ---------- Сделки (current session only) ----------
+function renderHistory(){
+  const session = getCurrentSession();
+  const list = $('historyList');
+
+  if(!session){
+    $('todayCount').textContent = '0';
+    $('todayProfit').textContent = '0 USDT';
+    $('historyDealsLabel').textContent = 'Сделок';
+    list.innerHTML = noSessionPromptHTML('Нет открытого дня — начни, чтобы записывать сделки.');
+    wireNoSessionButton(list, () => { renderHistory(); renderDayStatus(); renderExpenses(); renderDeposit(); });
+    return;
+  }
+
+  $('historyDealsLabel').textContent = 'Сделок · ' + session.label;
+  $('todayCount').textContent = session.deals.length;
+  $('todayProfit').textContent = fmtUsdt(session.deals.reduce((s,e)=>s+(e.profitUsdt||0),0));
+
+  if(session.deals.length === 0){
+    list.innerHTML = '<div class="empty">Сделок пока нет</div>';
+    return;
+  }
+  list.innerHTML = '';
+  session.deals.forEach(e => {
+    const card = document.createElement('div');
+    card.className = 'hist-item';
+    card.innerHTML = dealCardHTML(e);
+    list.appendChild(card);
+  });
+  attachDealCardHandlers(list,
+    () => getCurrentSession().deals,
+    (arr) => { const s = getCurrentSession(); if(s){ s.deals = arr; saveCurrentSession(s); } },
+    () => { renderHistory(); renderDayStatus(); }
+  );
+}
+$('clearHistBtn').addEventListener('click', async () => {
+  const session = getCurrentSession();
+  if(!session) return;
+  if(await showConfirm('Удалить все сделки текущего дня?')){
+    session.deals = [];
+    saveCurrentSession(session);
+    renderHistory();
+    renderDayStatus();
+  }
+});
+
+// ---------- Расходы (current session only) ----------
+$('addExpBtn').addEventListener('click', async () => {
+  const network = $('expNetwork').value;
+  const amount = parseFloat($('expAmount').value) || 0;
+  const comment = $('expComment').value.trim();
+  if(amount <= 0) return;
+  let session = getCurrentSession();
+  if(!session){
+    const ok = await showConfirm('Нет открытого дня. Открыть новый день и сохранить туда этот расход?');
+    if(!ok) return;
+    session = await startNewDaySession();
+    if(!session) return;
+  }
+  session.expenses.unshift({ network, amount, comment, ts: Date.now() });
+  saveCurrentSession(session);
+  $('expComment').value = '';
+  renderExpenses();
+  renderDayStatus();
+});
+
+// ---------- expense card rendering / editing (shared between current session and archived reports) ----------
+const EXPENSE_NETWORKS = ['TRC20','TON','BEP20','ERC20','Другое'];
+function expenseCardHTML(e){
+  const time = new Date(e.ts).toLocaleString('ru-RU', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+  return `
+    <div>
+      <div class="profit negative">−${fmtUsdt(e.amount)}</div>
+      <div class="info">${e.network}${e.comment ? ' · ' + e.comment : ''} · ${time}</div>
+    </div>
+    <div class="item-actions">
+      <button class="hist-edit" data-ts="${e.ts}">✏️</button>
+      <button class="hist-del" data-ts="${e.ts}">✕</button>
+    </div>
+  `;
+}
+function expenseEditFormHTML(e){
+  const options = EXPENSE_NETWORKS.map(n => `<option value="${n}" ${n===e.network?'selected':''}>${n}</option>`).join('');
+  return `
+    <div class="edit-form" style="width:100%;">
+      <div class="row2">
+        <div class="field"><label>Сеть</label><select class="ef-network">${options}</select></div>
+        <div class="field"><label>Сумма, USDT</label><input type="number" step="any" class="ef-amount" value="${e.amount}"></div>
+      </div>
+      <div class="field"><label>Комментарий</label><input type="text" class="ef-comment" value="${e.comment || ''}"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary ef-cancel">Отмена</button>
+        <button class="btn btn-primary ef-save">Сохранить</button>
+      </div>
+    </div>
+  `;
+}
+// getArr()/setArr(newArr): closures the caller supplies to read/write the specific expenses array
+function attachExpenseCardHandlers(container, getArr, setArr, rerender){
+  container.querySelectorAll('.hist-del').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if(!(await showConfirm('Удалить этот расход?'))) return;
+      const ts = parseFloat(btn.dataset.ts);
+      const arr = getArr();
+      const idx = arr.findIndex(x => x.ts === ts);
+      if(idx > -1){ arr.splice(idx,1); setArr(arr); }
+      rerender();
+    });
+  });
+  container.querySelectorAll('.hist-edit').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ts = parseFloat(btn.dataset.ts);
+      const arr = getArr();
+      const entry = arr.find(x => x.ts === ts);
+      if(!entry) return;
+      const card = btn.closest('.hist-item');
+      card.innerHTML = expenseEditFormHTML(entry);
+      card.querySelector('.ef-cancel').addEventListener('click', () => rerender());
+      card.querySelector('.ef-save').addEventListener('click', () => {
+        const updated = {
+          ...entry,
+          network: card.querySelector('.ef-network').value,
+          amount: parseFloat(card.querySelector('.ef-amount').value) || 0,
+          comment: card.querySelector('.ef-comment').value.trim(),
+        };
+        const arr2 = getArr();
+        const idx = arr2.findIndex(x => x.ts === ts);
+        if(idx > -1){ arr2[idx] = updated; setArr(arr2); }
+        rerender();
+      });
+    });
+  });
+}
+
+function renderExpenses(){
+  const session = getCurrentSession();
+  const el = $('expensesList');
+
+  if(!session){
+    $('todayExpenses').textContent = '0 USDT';
+    $('allExpenses').textContent = '0 USDT';
+    el.innerHTML = noSessionPromptHTML('Нет открытого дня — начни, чтобы записывать расходы.');
+    wireNoSessionButton(el, () => { renderExpenses(); renderDayStatus(); renderHistory(); renderDeposit(); });
+    return;
+  }
+
+  const total = session.expenses.reduce((s,e)=>s+e.amount,0);
+  $('todayExpenses').textContent = fmtUsdt(total);
+  $('allExpenses').textContent = fmtUsdt(total);
+
+  if(session.expenses.length === 0){ el.innerHTML = '<div class="empty">Расходов пока нет</div>'; return; }
+  el.innerHTML = '';
+  session.expenses.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'hist-item';
+    div.innerHTML = expenseCardHTML(e);
+    el.appendChild(div);
+  });
+  attachExpenseCardHandlers(el,
+    () => getCurrentSession().expenses,
+    (arr) => { const s = getCurrentSession(); if(s){ s.expenses = arr; saveCurrentSession(s); } },
+    () => { renderExpenses(); renderDayStatus(); }
+  );
+}
+$('clearExpBtn').addEventListener('click', async () => {
+  const session = getCurrentSession();
+  if(!session) return;
+  if(await showConfirm('Удалить все расходы текущего дня?')){
+    session.expenses = [];
+    saveCurrentSession(session);
+    renderExpenses();
+    renderDayStatus();
+  }
+});
+
+// ---------- Депозит (current session only) ----------
+let currentDepOpType = 'in';
+document.querySelectorAll('#depOpToggle .toggle-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#depOpToggle .toggle-opt').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    currentDepOpType = opt.dataset.optype;
+  });
+});
+
+// ---------- deposit op card rendering / editing (shared between current session and archived reports) ----------
+function depositOpCardHTML(op){
+  const time = new Date(op.ts).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+  const sign = op.type === 'in' ? '+' : '−';
+  return `
+    <div>
+      <div class="profit ${op.type==='out'?'negative':''}">${sign}${fmtUsdt(op.amount)}</div>
+      <div class="info">${op.type==='in'?'Пополнение':'Снятие'}${op.comment ? ' · ' + op.comment : ''} · ${time}</div>
+    </div>
+    <div class="item-actions">
+      <button class="hist-edit" data-ts="${op.ts}">✏️</button>
+      <button class="hist-del" data-ts="${op.ts}">✕</button>
+    </div>
+  `;
+}
+function depositOpEditFormHTML(op){
+  return `
+    <div class="edit-form" style="width:100%;">
+      <div class="field">
+        <label>Тип операции</label>
+        <div class="toggle-group ef-optype-group">
+          <div class="toggle-opt ef-optype ${op.type==='in'?'active':''}" data-optype="in">Пополнение</div>
+          <div class="toggle-opt ef-optype ${op.type==='out'?'active':''}" data-optype="out">Снятие</div>
+        </div>
+      </div>
+      <div class="field"><label>Сумма, USDT</label><input type="number" step="any" class="ef-amount" value="${op.amount}"></div>
+      <div class="field"><label>Комментарий</label><input type="text" class="ef-comment" value="${op.comment || ''}"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary ef-cancel">Отмена</button>
+        <button class="btn btn-primary ef-save">Сохранить</button>
+      </div>
+    </div>
+  `;
+}
+function attachDepositOpCardHandlers(container, getArr, setArr, rerender){
+  container.querySelectorAll('.hist-del').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if(!(await showConfirm('Удалить эту операцию?'))) return;
+      const ts = parseFloat(btn.dataset.ts);
+      const arr = getArr();
+      const idx = arr.findIndex(x => x.ts === ts);
+      if(idx > -1){ arr.splice(idx,1); setArr(arr); }
+      rerender();
+    });
+  });
+  container.querySelectorAll('.hist-edit').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ts = parseFloat(btn.dataset.ts);
+      const arr = getArr();
+      const entry = arr.find(x => x.ts === ts);
+      if(!entry) return;
+      const card = btn.closest('.hist-item');
+      card.innerHTML = depositOpEditFormHTML(entry);
+      let editType = entry.type;
+      card.querySelectorAll('.ef-optype').forEach(opt => {
+        opt.addEventListener('click', () => {
+          card.querySelectorAll('.ef-optype').forEach(o => o.classList.remove('active'));
+          opt.classList.add('active');
+          editType = opt.dataset.optype;
+        });
+      });
+      card.querySelector('.ef-cancel').addEventListener('click', () => rerender());
+      card.querySelector('.ef-save').addEventListener('click', () => {
+        const updated = {
+          ...entry,
+          type: editType,
+          amount: parseFloat(card.querySelector('.ef-amount').value) || 0,
+          comment: card.querySelector('.ef-comment').value.trim(),
+        };
+        const arr2 = getArr();
+        const idx = arr2.findIndex(x => x.ts === ts);
+        if(idx > -1){ arr2[idx] = updated; setArr(arr2); }
+        rerender();
+      });
+    });
+  });
+}
+
+function renderDeposit(){
+  const session = getCurrentSession();
+
+  if(!session){
+    $('depositBalance').textContent = '0 USDT';
+    $('depositBreakdown').textContent = '';
+    $('availableBreakdown').textContent = '';
+    const list = $('depOpsList');
+    list.innerHTML = noSessionPromptHTML('Нет открытого дня — начни, чтобы задать депозит.');
+    wireNoSessionButton(list, () => { renderDeposit(); renderDayStatus(); renderHistory(); renderExpenses(); });
+    $('depositStart').value = '';
+  } else {
+    $('depositStart').value = session.startDeposit || '';
+
+    const p = sessionBalanceParts(session);
+    $('depositBalance').textContent = fmtUsdt(p.balance);
+    $('depositBalance').classList.toggle('negative', p.balance < 0);
+    let breakdown = `старт ${fmtUsdt(p.start)} + профит ${fmtUsdt(p.profitUsdt)} − комиссии ${fmtUsdt(p.feesUsdt)} + пополнения ${fmtUsdt(p.inUsdt)} − снятия ${fmtUsdt(p.outUsdt)}`;
+    if(p.lossesUsdt > 0) breakdown += ` − потери ${fmtUsdt(p.lossesUsdt)}`;
+    $('depositBreakdown').textContent = breakdown;
+
+    const frozen = totalFrozen();
+    const available = p.balance - frozen;
+    $('availableBreakdown').textContent = frozen > 0
+      ? `Доступно: ${fmtUsdt(available)} (заморожено ${fmtUsdt(frozen)})`
+      : '';
+
+    const list = $('depOpsList');
+    if(session.depositOps.length === 0){
+      list.innerHTML = '<div class="empty">Операций пока нет</div>';
+    } else {
+      list.innerHTML = '';
+      session.depositOps.forEach(op => {
+        const div = document.createElement('div');
+        div.className = 'hist-item';
+        div.innerHTML = depositOpCardHTML(op);
+        list.appendChild(div);
+      });
+      attachDepositOpCardHandlers(list,
+        () => getCurrentSession().depositOps,
+        (arr) => { const s = getCurrentSession(); if(s){ s.depositOps = arr; saveCurrentSession(s); } },
+        () => { renderDeposit(); renderDayStatus(); }
+      );
+    }
+  }
+
+  renderFrozen();
+}
+
+// ---------- frozen funds UI ----------
+function frozenCardHTML(f){
+  const time = new Date(f.ts).toLocaleString('ru-RU', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+  const archivedMatch = f.sessionId ? getArchive().find(s => s.id === f.sessionId) : null;
+  const isCurrentSession = getCurrentSession() && f.sessionId === getCurrentSession().id;
+  let dayLine;
+  if(f.sessionLabel && archivedMatch){
+    dayLine = `<div class="info">🗓 День: <b>${f.sessionLabel}</b> (закрыт)</div>`;
+  } else if(f.sessionLabel && isCurrentSession){
+    dayLine = `<div class="info">🗓 День: <b>${f.sessionLabel}</b> (открыт сейчас)</div>`;
+  } else if(f.sessionLabel){
+    dayLine = `<div class="info">🗓 День: <b>${f.sessionLabel}</b></div>`;
+  } else {
+    dayLine = `<div class="info">🗓 Без привязки к дню</div>`;
+  }
+  return `
+    <div>
+      <div class="profit negative">🧊 ${fmtUsdt(f.amount)}</div>
+      <div class="info">${f.comment ? f.comment + ' · ' : ''}${time}</div>
+      ${dayLine}
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn btn-primary frozen-unfreeze" data-ts="${f.ts}" style="padding:8px;font-size:12px;">✅ Разморозить</button>
+        <button class="btn btn-secondary frozen-lost" data-ts="${f.ts}" style="padding:8px;font-size:12px;">❌ Депозит утерян</button>
+      </div>
+      ${archivedMatch ? `<button class="btn btn-secondary frozen-open-report" data-session-id="${f.sessionId}" style="width:100%;margin-top:6px;padding:8px;font-size:12px;">→ Открыть отчёт этого дня</button>` : ''}
+    </div>
+    <button class="hist-del frozen-delete" data-ts="${f.ts}" title="Удалить запись (без последствий для баланса)">✕</button>
+  `;
+}
+
+function renderFrozen(){
+  const list = getFrozen();
+  $('frozenTotal').textContent = fmtUsdt(totalFrozen());
+  const el = $('frozenList');
+  if(list.length === 0){ el.innerHTML = '<div class="empty">Заморозок нет</div>'; return; }
+  el.innerHTML = '';
+  list.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'hist-item';
+    div.style.alignItems = 'flex-start';
+    div.innerHTML = frozenCardHTML(f);
+    el.appendChild(div);
+  });
+
+  el.querySelectorAll('.frozen-open-report').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sid = btn.dataset.sessionId;
+      // sessionId may be numeric (Date.now()) — match either as string or number
+      const match = getArchive().find(s => String(s.id) === String(sid));
+      if(!match) return;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('[data-tab="reports"]').classList.add('active');
+      $('tab-reports').classList.add('active');
+      renderReportsTab();
+      openReport(match.id);
+    });
+  });
+  el.querySelectorAll('.frozen-delete').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if(!(await showConfirm('Удалить запись о заморозке? (без изменений в балансе)'))) return;
+      const ts = parseFloat(btn.dataset.ts);
+      const arr = getFrozen().filter(f => f.ts !== ts);
+      saveFrozen(arr);
+      renderFrozen(); renderDayStatus();
+    });
+  });
+  el.querySelectorAll('.frozen-unfreeze').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const ts = parseFloat(btn.dataset.ts);
+      const f = getFrozen().find(x => x.ts === ts);
+      if(!f) return;
+      if(!(await showConfirm(`Разморозить ${fmtUsdt(f.amount)}? Деньги вернутся, баланс не меняется — сумма и так была учтена.`))) return;
+      saveFrozen(getFrozen().filter(x => x.ts !== ts));
+      renderFrozen(); renderDeposit(); renderDayStatus();
+    });
+  });
+  el.querySelectorAll('.frozen-lost').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const ts = parseFloat(btn.dataset.ts);
+      const f = getFrozen().find(x => x.ts === ts);
+      if(!f) return;
+      let session = getCurrentSession();
+      if(!session){
+        const ok = await showConfirm('Нет открытого дня. Открыть новый день, чтобы записать туда эту потерю?');
+        if(!ok) return;
+        session = await startNewDaySession();
+        if(!session) return;
+      }
+      const ok2 = await showConfirm(`Подтвердить: депозит ${fmtUsdt(f.amount)} утерян (апелляция проиграна)? Сумма спишется с баланса как потеря и попадёт в отчёт за сегодня.`);
+      if(!ok2) return;
+      session.losses = session.losses || [];
+      session.losses.unshift({ amount: f.amount, comment: f.comment, ts: Date.now() });
+      saveCurrentSession(session);
+      saveFrozen(getFrozen().filter(x => x.ts !== ts));
+      renderFrozen(); renderDeposit(); renderDayStatus(); renderHistory();
+    });
+  });
+}
+
+$('addFrozenBtn').addEventListener('click', () => {
+  const amount = parseFloat($('frozenAmount').value) || 0;
+  const comment = $('frozenComment').value.trim();
+  if(amount <= 0) return;
+  const session = getCurrentSession();
+  const arr = getFrozen();
+  arr.unshift({
+    amount, comment, ts: Date.now(),
+    sessionId: session ? session.id : null,
+    sessionLabel: session ? session.label : null,
+  });
+  saveFrozen(arr);
+  $('frozenComment').value = '';
+  renderFrozen();
+  renderDeposit();
+  renderDayStatus();
+});
+
+
+$('saveDepositBtn').addEventListener('click', async () => {
+  let session = getCurrentSession();
+  const val = parseFloat($('depositStart').value) || 0;
+  if(!session){
+    const ok = await showConfirm('Нет открытого дня. Открыть новый день с этим стартовым депозитом?');
+    if(!ok) return;
+    session = await startNewDaySession(val);
+    if(!session) return;
+  } else {
+    session.startDeposit = val;
+    saveCurrentSession(session);
+  }
+  $('saveDepositBtn').textContent = '✓ Сохранено';
+  setTimeout(() => $('saveDepositBtn').textContent = '💾 Сохранить', 1000);
+  renderDeposit();
+  renderDayStatus();
+});
+
+$('addDepOpBtn').addEventListener('click', async () => {
+  const amount = parseFloat($('depOpAmount').value) || 0;
+  if(amount <= 0) return;
+  const comment = $('depOpComment').value.trim();
+  let session = getCurrentSession();
+  if(!session){
+    const ok = await showConfirm('Нет открытого дня. Открыть новый день и записать туда эту операцию?');
+    if(!ok) return;
+    session = await startNewDaySession();
+    if(!session) return;
+  }
+  session.depositOps.unshift({ type: currentDepOpType, amount, comment, ts: Date.now() });
+  saveCurrentSession(session);
+  $('depOpComment').value = '';
+  renderDeposit();
+  renderDayStatus();
+});
+
+// ---------- start / close day session ----------
+function showStartDayModal(prefillDeposit){
+  return new Promise(resolve => {
+    const arch = getArchive();
+    const lastBalance = (prefillDeposit !== undefined) ? prefillDeposit : (arch.length ? arch[0].endBalance : 0);
+    $('sdLabel').value = dayLabel(todayKey());
+    $('sdComment').value = '';
+    $('sdStartDeposit').value = lastBalance || '';
+    $('startDayModal').classList.add('open');
+    const cleanup = (result) => {
+      $('startDayModal').classList.remove('open');
+      $('sdStartBtn').onclick = null;
+      $('sdCancelBtn').onclick = null;
+      resolve(result);
+    };
+    $('sdCancelBtn').onclick = () => cleanup(null);
+    $('sdStartBtn').onclick = () => {
+      const label = $('sdLabel').value.trim() || dayLabel(todayKey());
+      const comment = $('sdComment').value.trim();
+      const startDeposit = parseFloat($('sdStartDeposit').value) || 0;
+      cleanup({label, comment, startDeposit});
+    };
+  });
+}
+
+async function startNewDaySession(prefillDeposit){
+  if(getCurrentSession()){
+    await showAlert('У тебя уже есть открытый день. Сначала заверши его во вкладке «Отчёты».');
+    return null;
+  }
+  const result = await showStartDayModal(prefillDeposit);
+  if(!result) return null;
+  const session = {
+    id: Date.now(),
+    label: result.label,
+    comment: result.comment,
+    startDeposit: result.startDeposit,
+    startedAt: Date.now(),
+    deals: [], expenses: [], depositOps: [], losses: []
+  };
+  saveCurrentSession(session);
+  syncRangeToTodayIfDefault();
+  renderDayStatus();
+  renderPeriod();
+  return session;
+}
+
+async function closeCurrentDaySession(){
+  const session = getCurrentSession();
+  if(!session) return;
+  const parts = sessionBalanceParts(session);
+
+  if(session.deals.length === 0 && session.expenses.length === 0){
+    const ok0 = await showConfirm('За этот день не записано ни одной сделки. Всё равно завершить?');
+    if(!ok0) return;
+  }
+
+  const ok = await showConfirm(
+    `Завершить день «${session.label}»?\n\nИтоговый баланс: ${fmtUsdt(parts.balance)}\n\nВсё (сделки, расходы, депозит) будет перенесено во вкладку «Отчёты» отдельным пакетом. Текущие вкладки очистятся для нового дня.`
+  );
+  if(!ok) return;
+
+  const archived = { ...session, closedAt: Date.now(), endBalance: +parts.balance.toFixed(2), frozenAtClose: totalFrozen() };
+  const arr = getArchive();
+  arr.unshift(archived);
+  saveArchive(arr);
+  saveCurrentSession(null);
+
+  // reset the goal so the next day starts with a blank target instead of yesterday's number
+  $('goalTarget').value = '';
+  saveState();
+
+  renderDayStatus();
+  renderHistory();
+  renderExpenses();
+  renderDeposit();
+  renderReportsTab();
+}
+
+function renderDayStatus(){
+  const session = getCurrentSession();
+  const label = $('dayStatusLabel');
+  const sub = $('dayStatusSub');
+  const btn = $('closeDayBtn');
+  const frozen = totalFrozen();
+  const frozenSuffix = frozen > 0 ? ` · 🧊 заморожено ${fmtUsdt(frozen)}` : '';
+  if(session){
+    const p = sessionBalanceParts(session);
+    label.textContent = session.label;
+    label.classList.remove('closed');
+    sub.textContent = `${session.comment ? session.comment + ' · ' : ''}Сделок: ${session.deals.length}, оборот: ${fmtTurnover(session.deals)}, баланс сейчас: ${fmtUsdt(p.balance)}${frozenSuffix}`;
+    btn.textContent = '✅ Завершить день';
+  } else {
+    label.textContent = 'Нет открытого дня';
+    label.classList.remove('closed');
+    sub.textContent = 'Открой новый день, чтобы начать записывать сделки' + frozenSuffix;
+    btn.textContent = '▶️ Открыть новый день';
+  }
+}
+
+$('closeDayBtn').addEventListener('click', async () => {
+  const session = getCurrentSession();
+  if(session){
+    await closeCurrentDaySession();
+  } else {
+    await startNewDaySession();
+    renderHistory(); renderExpenses(); renderDeposit();
+  }
+});
+
+// turnover (sell-side volume only) for a set of deals, in fiat — per-currency breakdown if mixed
+function fmtTurnover(deals){
+  if(!deals || deals.length === 0) return fmt(0);
+  const cur = dealsCurrency(deals);
+  if(cur !== 'MIXED'){
+    const total = deals.reduce((s,e)=>s+(e.revenue||0),0);
+    return fmt(total, cur);
+  }
+  const map = {};
+  deals.forEach(d => {
+    const c = d.currency || 'RUB';
+    map[c] = (map[c]||0) + (d.revenue||0);
+  });
+  return Object.entries(map).map(([c,v]) => fmt(v,c)).join(' · ');
+}
+
+// ---------- reports list (Отчёты tab) ----------
+// currency of a set of deals: the shared code if uniform, or 'MIXED' if they use different fiat currencies
+function dealsCurrency(deals){
+  if(!deals || deals.length === 0) return null;
+  const codes = [...new Set(deals.map(d => d.currency || 'RUB'))];
+  return codes.length === 1 ? codes[0] : 'MIXED';
+}
+function currencyBreakdownUsdt(deals){
+  const map = {};
+  deals.forEach(d => {
+    const cur = d.currency || 'RUB';
+    map[cur] = (map[cur] || 0) + (d.profitUsdt || 0);
+  });
+  return map;
+}
+function fmtFiatMixed(amount, deals){
+  const cur = dealsCurrency(deals);
+  if(cur === null) return fmt(amount, 'RUB');
+  if(cur !== 'MIXED') return fmt(amount, cur);
+  const map = currencyBreakdownUsdt(deals);
+  return Object.entries(map).map(([c,v]) => `${c}: ${fmtUsdt(v)}`).join(' · ');
+}
+
+function dealsWord(n){
+  const n10 = n % 10, n100 = n % 100;
+  if(n100 >= 11 && n100 <= 14) return 'сделок';
+  if(n10 === 1) return 'сделка';
+  if(n10 >= 2 && n10 <= 4) return 'сделки';
+  return 'сделок';
+}
+
+// ---------- period metrics broken down per fiat currency (RUB/TRY/INR/KZT) ----------
+function renderPeriodCurrencyMetrics(deals){
+  const container = $('periodCurrencyMetrics');
+  if(!container) return;
+  if(!deals || deals.length === 0){
+    container.innerHTML = '<div class="empty">Нет сделок за выбранный период</div>';
+    return;
+  }
+
+  const groups = {};
+  deals.forEach(d => {
+    const cur = d.currency || 'RUB';
+    if(!groups[cur]) groups[cur] = { count:0, amountUsdt:0, cost:0, revenue:0, feeFiat:0, feeUsdt:0, profitFiat:0, profitUsdt:0 };
+    const g = groups[cur];
+    const cost = d.cost != null ? d.cost : (d.amount||0) * (d.rateBuy||0);
+    const revenue = d.revenue != null ? d.revenue : (d.amount||0) * (d.rateSell||0);
+    const feeAmount = revenue * ((d.feePct||0)/100) + (d.feeFlat||0);
+    g.count += 1;
+    g.amountUsdt += d.amount || 0;
+    g.cost += cost;
+    g.revenue += revenue;
+    g.feeFiat += feeAmount;
+    g.feeUsdt += (d.rateBuy ? feeAmount / d.rateBuy : 0);
+    g.profitFiat += (d.profit != null ? d.profit : (revenue - feeAmount - cost));
+    g.profitUsdt += (d.profitUsdt || 0);
+  });
+
+  const order = Object.keys(CURRENCIES);
+  const currencies = Object.keys(groups).sort((a,b) => {
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+
+  container.innerHTML = currencies.map(cur => {
+    const g = groups[cur];
+    const avgBuy = g.amountUsdt !== 0 ? g.cost / g.amountUsdt : 0;
+    const avgSell = g.amountUsdt !== 0 ? g.revenue / g.amountUsdt : 0;
+    return `
+      <div class="curr-block">
+        <div class="curr-block-head">
+          <span class="curr-badge">${currencySymbol(cur)} ${cur}</span>
+          <span class="curr-count">${g.count} ${dealsWord(g.count)}</span>
+        </div>
+        <div class="curr-profit-row">
+          <div class="k">Чистая прибыль</div>
+          <div class="v ${g.profitUsdt < 0 ? 'neg' : 'pos'}">${fmtUsdt(g.profitUsdt)} <span>≈ ${fmt(g.profitFiat, cur)}</span></div>
+        </div>
+        <div class="curr-grid">
+          <div class="curr-item"><div class="k">Куплено</div><div class="v">${fmt(g.cost, cur)}</div></div>
+          <div class="curr-item"><div class="k">Продано</div><div class="v">${fmt(g.revenue, cur)}</div></div>
+          <div class="curr-item"><div class="k">Ср. покупка</div><div class="v">${fmtRate(avgBuy)} ${currencySymbol(cur)}</div></div>
+          <div class="curr-item"><div class="k">Ср. продажа</div><div class="v">${fmtRate(avgSell)} ${currencySymbol(cur)}</div></div>
+          <div class="curr-item full"><div class="k">Комиссии</div><div class="v">${fmtUsdt(g.feeUsdt)} ≈ ${fmt(g.feeFiat, cur)}</div></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderReports(){
+  const arr = getArchive();
+  const el = $('daysList');
+  if(arr.length === 0){ el.innerHTML = '<div class="empty">Пока нет завершённых дней</div>'; return; }
+  el.innerHTML = '';
+  arr.forEach(s => {
+    const parts = sessionBalanceParts(s);
+    const row = document.createElement('div');
+    row.className = 'day-row';
+    row.innerHTML = `
+      <div class="date-row">
+        <div class="date">${s.label}${s.comment ? ' · ' + s.comment : ''} · ${s.deals.length} сделок</div>
+        <button class="hist-del day-delete" data-id="${s.id}" title="Удалить день">✕</button>
+      </div>
+      <div class="grid">
+        <div class="mini">Профит USDT<b>${fmtUsdt(parts.profitUsdt)}</b></div>
+        <div class="mini">Профит в валюте<b>${fmtFiatMixed(parts.profitRub, s.deals)}</b></div>
+        <div class="mini">Расходы<b class="neg">−${fmtUsdt(parts.feesUsdt)}</b></div>
+        <div class="mini">Потери<b class="neg">−${fmtUsdt(parts.lossesUsdt)}</b></div>
+        ${s.frozenAtClose > 0 ? `<div class="mini">🧊 Заморожено на закрытии<b>${fmtUsdt(s.frozenAtClose)}</b></div>` : ''}
+        <div class="mini">Баланс на конец<b class="${parts.balance<0?'neg':'pos'}">${fmtUsdt(parts.balance)}</b></div>
+      </div>
+    `;
+    row.addEventListener('click', () => openReport(s.id));
+    row.querySelector('.day-delete').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const ok = await showConfirm(`Удалить отчёт за «${s.label}»? Это действие нельзя отменить — все сделки, расходы и данные этого дня будут удалены безвозвратно.`);
+      if(!ok) return;
+      const updated = getArchive().filter(x => x.id !== s.id);
+      saveArchive(updated);
+      renderReports();
+      renderPeriod();
+    });
+    el.appendChild(row);
+  });
+}
+
+function openReport(id){
+  const arr = getArchive();
+  const session = arr.find(s => s.id === id);
+  if(!session) return;
+  const parts = sessionBalanceParts(session);
+
+  $('dayOverlay').dataset.currentId = id;
+  $('dayOverlayTitle').textContent = session.label;
+  $('dayOverlayComment').textContent = session.comment || '';
+  $('dodDeals').textContent = session.deals.length;
+  $('dodProfitUsdt').textContent = fmtUsdt(parts.profitUsdt);
+  $('dodProfitRub').textContent = fmtFiatMixed(parts.profitRub, session.deals);
+  $('dodExpenses').textContent = fmtUsdt(parts.feesUsdt);
+  $('dodLosses').textContent = fmtUsdt(parts.lossesUsdt);
+  $('dodFrozenAtClose').textContent = session.frozenAtClose > 0
+    ? fmtUsdt(session.frozenAtClose) + ' (на момент закрытия дня)'
+    : '0 USDT';
+  $('dodDepositBalance').textContent = fmtUsdt(parts.balance);
+  $('dodDepositBalance').classList.toggle('negative', parts.balance < 0);
+  $('dodDepositBreakdown').textContent =
+    `старт ${fmtUsdt(parts.start)} + профит ${fmtUsdt(parts.profitUsdt)} − комиссии ${fmtUsdt(parts.feesUsdt)} + пополнения ${fmtUsdt(parts.inUsdt)} − снятия ${fmtUsdt(parts.outUsdt)}` +
+    (parts.lossesUsdt > 0 ? ` − потери ${fmtUsdt(parts.lossesUsdt)}` : '');
+
+  const dealsList = $('dodDealsList');
+  if(session.deals.length === 0){
+    dealsList.innerHTML = '<div class="empty">Сделок в этот день нет</div>';
+  } else {
+    dealsList.innerHTML = '';
+    session.deals.forEach(e => {
+      const card = document.createElement('div');
+      card.className = 'hist-item';
+      card.innerHTML = dealCardHTML(e);
+      dealsList.appendChild(card);
+    });
+    attachDealCardHandlers(dealsList,
+      () => getArchive().find(s => s.id === id).deals,
+      (newDeals) => {
+        const a = getArchive();
+        const i = a.findIndex(s => s.id === id);
+        if(i > -1){ a[i].deals = newDeals; a[i].endBalance = +sessionBalanceParts(a[i]).balance.toFixed(2); saveArchive(a); }
+      },
+      () => { openReport(id); renderReports(); renderPeriod(); }
+    );
+  }
+
+  const expList = $('dodExpList');
+  if(session.expenses.length === 0){
+    expList.innerHTML = '<div class="empty">Расходов в этот день нет</div>';
+  } else {
+    expList.innerHTML = '';
+    session.expenses.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'hist-item';
+      div.innerHTML = expenseCardHTML(e);
+      expList.appendChild(div);
+    });
+  }
+  attachExpenseCardHandlers(expList,
+    () => getArchive().find(s => s.id === id).expenses,
+    (newExpenses) => {
+      const a = getArchive();
+      const i = a.findIndex(s => s.id === id);
+      if(i > -1){ a[i].expenses = newExpenses; a[i].endBalance = +sessionBalanceParts(a[i]).balance.toFixed(2); saveArchive(a); }
+    },
+    () => { openReport(id); renderReports(); renderPeriod(); }
+  );
+
+  // add a forgotten expense directly into this closed report
+  $('dodAddExpBtn').onclick = () => {
+    const network = $('dodExpNetwork').value;
+    const amount = parseFloat($('dodExpAmount').value) || 0;
+    const comment = $('dodExpComment').value.trim();
+    if(amount <= 0) return;
+    const a = getArchive();
+    const i = a.findIndex(s => s.id === id);
+    if(i > -1){
+      a[i].expenses.unshift({ network, amount, comment, ts: Date.now() });
+      a[i].endBalance = +sessionBalanceParts(a[i]).balance.toFixed(2);
+      saveArchive(a);
+    }
+    $('dodExpComment').value = '';
+    $('dodExpAmount').value = '1';
+    openReport(id); renderReports(); renderPeriod();
+  };
+
+  const lossesList = $('dodLossesList');
+  const sessionLosses = session.losses || [];
+  if(sessionLosses.length === 0){
+    lossesList.innerHTML = '<div class="empty">Потерь в этот день нет</div>';
+  } else {
+    lossesList.innerHTML = '';
+    sessionLosses.forEach(l => {
+      const time = new Date(l.ts).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+      const div = document.createElement('div');
+      div.className = 'hist-item';
+      div.innerHTML = `
+        <div>
+          <div class="profit negative">−${fmtUsdt(l.amount)}</div>
+          <div class="info">${l.comment ? l.comment + ' · ' : ''}${time}</div>
+        </div>
+        <button class="hist-del" data-ts="${l.ts}">✕</button>
+      `;
+      lossesList.appendChild(div);
+    });
+    lossesList.querySelectorAll('.hist-del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if(!(await showConfirm('Удалить запись о потере? Сумма вернётся в баланс дня.'))) return;
+        const ts = parseFloat(btn.dataset.ts);
+        const a = getArchive();
+        const i = a.findIndex(s => s.id === id);
+        if(i > -1){
+          a[i].losses = (a[i].losses||[]).filter(x => x.ts !== ts);
+          a[i].endBalance = +sessionBalanceParts(a[i]).balance.toFixed(2);
+          saveArchive(a);
+        }
+        openReport(id); renderReports(); renderPeriod();
+      });
+    });
+  }
+
+  const depOpsList = $('dodDepOpsList');
+  if(session.depositOps.length === 0){
+    depOpsList.innerHTML = '<div class="empty">Операций в этот день нет</div>';
+  } else {
+    depOpsList.innerHTML = '';
+    session.depositOps.forEach(op => {
+      const div = document.createElement('div');
+      div.className = 'hist-item';
+      div.innerHTML = depositOpCardHTML(op);
+      depOpsList.appendChild(div);
+    });
+  }
+  attachDepositOpCardHandlers(depOpsList,
+    () => getArchive().find(s => s.id === id).depositOps,
+    (newOps) => {
+      const a = getArchive();
+      const i = a.findIndex(s => s.id === id);
+      if(i > -1){ a[i].depositOps = newOps; a[i].endBalance = +sessionBalanceParts(a[i]).balance.toFixed(2); saveArchive(a); }
+    },
+    () => { openReport(id); renderReports(); renderPeriod(); }
+  );
+
+  // add a forgotten deposit operation directly into this closed report
+  let dodOpType = 'in';
+  document.querySelectorAll('#dodOpToggle .toggle-opt').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.optype === 'in');
+    opt.onclick = () => {
+      document.querySelectorAll('#dodOpToggle .toggle-opt').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      dodOpType = opt.dataset.optype;
+    };
+  });
+  $('dodAddOpBtn').onclick = () => {
+    const amount = parseFloat($('dodOpAmount').value) || 0;
+    const comment = $('dodOpComment').value.trim();
+    if(amount <= 0) return;
+    const a = getArchive();
+    const i = a.findIndex(s => s.id === id);
+    if(i > -1){
+      a[i].depositOps.unshift({ type: dodOpType, amount, comment, ts: Date.now() });
+      a[i].endBalance = +sessionBalanceParts(a[i]).balance.toFixed(2);
+      saveArchive(a);
+    }
+    $('dodOpComment').value = '';
+    $('dodOpAmount').value = '100';
+    openReport(id); renderReports(); renderPeriod();
+  };
+
+  $('dayOverlay').classList.add('open');
+}
+$('dayOverlayBack').addEventListener('click', () => $('dayOverlay').classList.remove('open'));
+$('dayOverlayDelete').addEventListener('click', async () => {
+  const id = $('dayOverlay').dataset.currentId;
+  const session = getArchive().find(s => String(s.id) === String(id));
+  if(!session) return;
+  const ok = await showConfirm(`Удалить отчёт за «${session.label}»? Это действие нельзя отменить — все сделки, расходы и данные этого дня будут удалены безвозвратно.`);
+  if(!ok) return;
+  const updated = getArchive().filter(x => String(x.id) !== String(id));
+  saveArchive(updated);
+  $('dayOverlay').classList.remove('open');
+  renderReports();
+  renderPeriod();
+});
+
+// ---------- period summary (across archive + current session, by chosen date range) ----------
+function dateInputToDayStart(value){
+  // value is "YYYY-MM-DD" from <input type="date">, interpreted in local time
+  const [y,m,d] = value.split('-').map(Number);
+  return new Date(y, m-1, d, 0, 0, 0, 0).getTime();
+}
+function dateInputToDayEnd(value){
+  const [y,m,d] = value.split('-').map(Number);
+  return new Date(y, m-1, d, 23, 59, 59, 999).getTime();
+}
+function dateToInputValue(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function periodRange(){
+  const fromVal = $('rangeFrom').value;
+  const toVal = $('rangeTo').value;
+  const from = fromVal ? dateInputToDayStart(fromVal) : 0;
+  const to = toVal ? dateInputToDayEnd(toVal) : Date.now();
+  return {from, to};
+}
+
+// If the person hasn't deliberately picked a range, keep the date fields glued to "today" —
+// otherwise they silently go stale after midnight while the page stays open (no reload happens
+// automatically in a PWA/home-screen context), and yesterday's range keeps being shown forever.
+let userSetCustomRange = false;
+function syncRangeToTodayIfDefault(){
+  if(userSetCustomRange) return;
+  const t = dateToInputValue(new Date());
+  if($('rangeFrom').value !== t || $('rangeTo').value !== t){
+    $('rangeFrom').value = t;
+    $('rangeTo').value = t;
+  }
+}
+$('resetRangeBtn').addEventListener('click', () => {
+  userSetCustomRange = false;
+  syncRangeToTodayIfDefault();
+  renderPeriod();
+});
+
+document.querySelectorAll('#rangeFrom, #rangeTo').forEach(el => {
+  el.addEventListener('change', () => { userSetCustomRange = true; renderPeriod(); });
+});
+
+function allDealsFlat(){
+  const archive = getArchive();
+  const current = getCurrentSession();
+  let deals = [];
+  archive.forEach(s => deals.push(...s.deals));
+  if(current) deals.push(...current.deals);
+  return deals;
+}
+function allExpensesFlat(){
+  const archive = getArchive();
+  const current = getCurrentSession();
+  let ex = [];
+  archive.forEach(s => ex.push(...s.expenses));
+  if(current) ex.push(...current.expenses);
+  return ex;
+}
+function allDepositOpsFlat(){
+  const archive = getArchive();
+  const current = getCurrentSession();
+  let ops = [];
+  archive.forEach(s => ops.push(...s.depositOps));
+  if(current) ops.push(...current.depositOps);
+  return ops;
+}
+function allLossesFlat(){
+  const archive = getArchive();
+  const current = getCurrentSession();
+  let losses = [];
+  archive.forEach(s => losses.push(...(s.losses||[])));
+  if(current) losses.push(...(current.losses||[]));
+  return losses;
+}
+
+// previous period of the same length immediately preceding [from, to]
+function previousPeriodRange(from, to){
+  const span = to - from + 1;
+  const prevTo = from - 1;
+  const prevFrom = prevTo - span + 1;
+  return {from: prevFrom, to: prevTo};
+}
+
+function renderPeriodCompare(from, to, curProfitUsdt){
+  const el = $('periodCompare');
+  if(!el) return;
+  const {from: prevFrom, to: prevTo} = previousPeriodRange(from, to);
+  const prevDeals = allDealsFlat().filter(e => e.ts >= prevFrom && e.ts <= prevTo);
+  if(prevDeals.length === 0){
+    el.textContent = 'нет данных за пред. период';
+    el.className = 'period-compare muted';
+    return;
+  }
+  const prevProfitUsdt = prevDeals.reduce((s,e)=>s+(e.profitUsdt||0),0);
+  if(prevProfitUsdt === 0){
+    const diff = curProfitUsdt;
+    el.textContent = (diff >= 0 ? '+' : '') + fmtUsdt(diff) + ' vs пред. период';
+    el.className = 'period-compare ' + (diff > 0 ? 'pos' : diff < 0 ? 'neg' : 'muted');
+    return;
+  }
+  const pct = ((curProfitUsdt - prevProfitUsdt) / Math.abs(prevProfitUsdt)) * 100;
+  el.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(0) + '% vs пред. период';
+  el.className = 'period-compare ' + (pct > 0 ? 'pos' : pct < 0 ? 'neg' : 'muted');
+}
+
+// ---------- time-of-day profitability (dayparts, from deals in the selected period) ----------
+const DAYPARTS = [
+  {key:'night',   label:'Ночь · 00–06',   from:0,  to:6},
+  {key:'morning', label:'Утро · 06–12',   from:6,  to:12},
+  {key:'day',     label:'День · 12–18',   from:12, to:18},
+  {key:'evening', label:'Вечер · 18–24',  from:18, to:24},
+];
+function renderTimeOfDay(deals){
+  const el = $('timeOfDayList');
+  if(!el) return;
+  if(!deals || deals.length === 0){
+    el.innerHTML = '<div class="empty">Нет сделок за выбранный период</div>';
+    return;
+  }
+  const buckets = DAYPARTS.map(dp => ({...dp, profit:0, count:0}));
+  deals.forEach(d => {
+    const h = new Date(d.ts).getHours();
+    const b = buckets.find(b => h >= b.from && h < b.to);
+    if(b){ b.profit += (d.profitUsdt||0); b.count += 1; }
+  });
+  const maxAbs = Math.max(1, ...buckets.map(b => Math.abs(b.profit)));
+  el.innerHTML = buckets.map(b => {
+    const pct = Math.round(Math.abs(b.profit) / maxAbs * 100);
+    return `
+      <div class="tod-row">
+        <div class="tod-head"><span>${b.label}</span><b class="${b.profit<0?'neg':''}">${fmtUsdt(b.profit)} · ${b.count} ${dealsWord(b.count)}</b></div>
+        <div class="tod-bar-bg"><div class="tod-bar-fill ${b.profit<0?'neg':''}" style="width:${pct}%"></div></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderPeriod(){
+  const {from, to} = periodRange();
+  const hFiltered = allDealsFlat().filter(e => e.ts >= from && e.ts <= to);
+  const exFiltered = allExpensesFlat().filter(e => e.ts >= from && e.ts <= to);
+  const lossesFiltered = allLossesFlat().filter(e => e.ts >= from && e.ts <= to);
+
+  const profitRub = hFiltered.reduce((s,e)=>s+e.profit,0);
+  const profitUsdt = hFiltered.reduce((s,e)=>s+(e.profitUsdt||0),0);
+  const expUsdt = exFiltered.reduce((s,e)=>s+e.amount,0);
+  const lossUsdt = lossesFiltered.reduce((s,e)=>s+e.amount,0);
+  const net = profitUsdt - expUsdt - lossUsdt;
+
+  const fromVal = $('rangeFrom').value;
+  const sameDay = fromVal && fromVal === $('rangeTo').value;
+  $('periodLabel').textContent = sameDay ? `Профит за ${dayLabel(fromVal)}` : 'Профит за выбранный период';
+  $('periodProfitUsdt').textContent = fmtUsdt(profitUsdt);
+  $('periodProfitUsdt').classList.toggle('negative', profitUsdt < 0);
+  $('periodProfitRub').textContent = hFiltered.length ? '≈ ' + fmtFiatMixed(profitRub, hFiltered) : '≈ ' + fmt(0);
+  $('periodDealsCount').textContent = `${hFiltered.length} сделок`;
+  $('periodExpenses').textContent = fmtUsdt(expUsdt);
+  $('periodLosses').textContent = fmtUsdt(lossUsdt);
+  $('periodNet').textContent = fmtUsdt(net);
+
+  renderPeriodCurrencyMetrics(hFiltered);
+  renderPeriodCompare(from, to, profitUsdt);
+  renderTimeOfDay(hFiltered);
+
+  lastPeriodProfitUsdt = profitUsdt;
+  renderGoal();
+}
+
+// ---------- goal progress (tied to the selected date range) ----------
+let lastPeriodProfitUsdt = 0;
+
+function renderGoal(){
+  const goal = parseFloat($('goalTarget').value) || 0;
+  const fill = $('goalProgressFill');
+  const text = $('goalProgressText');
+
+  if(goal <= 0){
+    fill.style.width = '0%';
+    fill.classList.remove('complete');
+    text.textContent = lastPeriodProfitUsdt !== 0
+      ? `Заработано за период: ${fmtUsdt(lastPeriodProfitUsdt)} — задай цель, чтобы видеть прогресс`
+      : 'Задай цель, чтобы видеть прогресс';
+    return;
+  }
+
+  const pct = Math.max(0, Math.min(100, (lastPeriodProfitUsdt/goal)*100));
+  fill.style.width = pct + '%';
+  fill.classList.toggle('complete', pct >= 100);
+
+  if(pct >= 100){
+    text.textContent = `🎉 Цель достигнута: ${fmtUsdt(lastPeriodProfitUsdt)} из ${fmtUsdt(goal)}`;
+  } else {
+    const remaining = goal - lastPeriodProfitUsdt;
+    text.textContent = `${fmtUsdt(lastPeriodProfitUsdt)} из ${fmtUsdt(goal)} (${pct.toFixed(0)}%) · осталось ${fmtUsdt(remaining)}`;
+  }
+}
+$('goalTarget').addEventListener('input', () => { renderGoal(); saveState(); });
+$('reservePct').addEventListener('input', () => { saveState(); });
+
+function renderOverview(){
+  const todayExp = allExpensesFlat().filter(e => isToday(e.ts)).reduce((s,e)=>s+e.amount,0);
+  const todayLoss = allLossesFlat().filter(e => isToday(e.ts)).reduce((s,e)=>s+e.amount,0);
+  $('totalExpensesAllTime').textContent = fmtUsdt(todayExp);
+  $('totalLossesAllTime').textContent = fmtUsdt(todayLoss);
+  $('totalFrozenNow').textContent = fmtUsdt(totalFrozen());
+  $('reserveTotal').textContent = fmtUsdt(getReserve().total || 0);
+}
+
+// ---------- mini month calendar (Отчёты tab) ----------
+let calViewDate = new Date();
+function renderCalendar(){
+  const grid = $('calGrid');
+  const label = $('calLabel');
+  if(!grid || !label) return;
+
+  const year = calViewDate.getFullYear();
+  const month = calViewDate.getMonth();
+  label.textContent = calViewDate.toLocaleDateString('ru-RU', {month:'long', year:'numeric'});
+
+  // day-of-month -> {profit, sessionId} closed sessions on that calendar day (by startedAt — the day the session was opened/named — falling back to closedAt for older data without startedAt)
+  const byDay = {};
+  getArchive().forEach(s => {
+    const ts = s.startedAt || s.closedAt || s.id;
+    if(!ts) return;
+    const d = new Date(ts);
+    if(d.getFullYear() !== year || d.getMonth() !== month) return;
+    const dom = d.getDate();
+    const parts = sessionBalanceParts(s);
+    if(!byDay[dom]) byDay[dom] = {profit:0, id:s.id};
+    byDay[dom].profit += parts.profitUsdt;
+    byDay[dom].id = s.id;
+  });
+
+  const firstOfMonth = new Date(year, month, 1);
+  const leadBlanks = (firstOfMonth.getDay() + 6) % 7; // Monday-first offset
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  let html = '';
+  for(let i = 0; i < leadBlanks; i++) html += '<div class="cal-cell empty-cell"></div>';
+  for(let dom = 1; dom <= daysInMonth; dom++){
+    const info = byDay[dom];
+    if(!info){
+      html += `<div class="cal-cell">${dom}</div>`;
+    } else {
+      const cls = info.profit > 0 ? 'pos' : (info.profit < 0 ? 'neg' : '');
+      html += `<div class="cal-cell has-data ${cls}" data-session-id="${info.id}">${dom}</div>`;
+    }
+  }
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.cal-cell.has-data').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const sid = cell.dataset.sessionId;
+      const match = getArchive().find(s => String(s.id) === String(sid));
+      if(match) openReport(match.id);
+    });
+  });
+}
+$('calPrevBtn').addEventListener('click', () => {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() - 1, 1);
+  renderCalendar();
+});
+$('calNextBtn').addEventListener('click', () => {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() + 1, 1);
+  renderCalendar();
+});
+
+function renderReportsTab(){ showReportsSubview('overview'); syncRangeToTodayIfDefault(); renderDayStatus(); renderOverview(); renderReports(); renderPeriod(); renderCalendar(); }
+
+// ---------- excel export ----------
+$('exportExcelBtn').addEventListener('click', async () => {
+  if(typeof XLSX === 'undefined'){
+    await showAlert('Для экспорта в Excel нужен интернет (один раз подгружается компонент для сборки файла). Проверь соединение и попробуй ещё раз.');
+    return;
+  }
+  const {from, to} = periodRange();
+  const h = allDealsFlat().filter(e => e.ts >= from && e.ts <= to).sort((a,b)=>a.ts-b.ts);
+  const ex = allExpensesFlat().filter(e => e.ts >= from && e.ts <= to).sort((a,b)=>a.ts-b.ts);
+  const depOpsAll = allDepositOpsFlat().filter(e => e.ts >= from && e.ts <= to).sort((a,b)=>a.ts-b.ts);
+
+  if(h.length === 0 && ex.length === 0){
+    await showAlert('За выбранный период нет сохранённых данных.');
+    return;
+  }
+
+  // ---- Sheet 1: Итоги по дням (по отчётам, пересекающимся с периодом) ----
+  const archive = getArchive();
+  const current = getCurrentSession();
+  const sessionsInPeriod = [];
+  archive.forEach(s => {
+    const overlap = s.deals.some(d=>d.ts>=from && d.ts<=to) || s.expenses.some(d=>d.ts>=from && d.ts<=to) || s.depositOps.some(d=>d.ts>=from && d.ts<=to);
+    if(overlap) sessionsInPeriod.push(s);
+  });
+  if(current){
+    const overlap = current.deals.some(d=>d.ts>=from && d.ts<=to) || current.expenses.some(d=>d.ts>=from && d.ts<=to) || current.depositOps.some(d=>d.ts>=from && d.ts<=to);
+    if(overlap) sessionsInPeriod.push(current);
+  }
+  sessionsInPeriod.sort((a,b) => (a.startedAt||a.id) - (b.startedAt||b.id));
+
+  const daysAOA = [['День','Валюта','Сделок','Профит, USDT','Профит (в валюте)','Расходы, USDT','Потери, USDT','Депозит старт, USDT','Пополнения, USDT','Снятия, USDT','Баланс конец дня, USDT']];
+  let totDeals=0, totProfitRub=0, totProfitUsdt=0, totExp=0, totLosses=0, totIn=0, totOut=0;
+  sessionsInPeriod.forEach(s => {
+    const p = sessionBalanceParts(s);
+    const label = s.label + (s.comment ? ' (' + s.comment + ')' : '') + (current && s.id === current.id ? ' — открыт' : '');
+    const cur = dealsCurrency(s.deals) || '—';
+    daysAOA.push([label, cur === 'MIXED' ? 'смешанная' : cur, s.deals.length, +p.profitUsdt.toFixed(2), +p.profitRub.toFixed(2), +p.feesUsdt.toFixed(2), +p.lossesUsdt.toFixed(2),
+      +p.start.toFixed(2), +p.inUsdt.toFixed(2), +p.outUsdt.toFixed(2), +p.balance.toFixed(2)]);
+    totDeals += s.deals.length; totProfitRub += p.profitRub; totProfitUsdt += p.profitUsdt; totExp += p.feesUsdt; totLosses += p.lossesUsdt;
+    totIn += p.inUsdt; totOut += p.outUsdt;
+  });
+  daysAOA.push(['ИТОГО', '', totDeals, +totProfitUsdt.toFixed(2), '', +totExp.toFixed(2), +totLosses.toFixed(2), '', +totIn.toFixed(2), +totOut.toFixed(2), '']);
+  const wsDays = XLSX.utils.aoa_to_sheet(daysAOA);
+  wsDays['!cols'] = [{wch:22},{wch:10},{wch:9},{wch:13},{wch:15},{wch:14},{wch:13},{wch:15},{wch:15},{wch:13},{wch:17}];
+  wsDays['!views'] = [{state:'frozen', ySplit:1}];
+
+  // ---- Sheet 2: Сделки ----
+  const dealsAOA = [['Дата','Время','Валюта','Сумма, USDT','Курс продажи','Курс покупки','Комиссия %','Комиссия фикс (в валюте)','Спред (в валюте)','Спред, %','Профит, USDT','Профит (в валюте)']];
+  h.forEach(e => {
+    const d = new Date(e.ts);
+    dealsAOA.push([
+      dayLabel(dayKey(e.ts)),
+      d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),
+      e.currency || 'RUB',
+      +e.amount.toFixed(2), +e.rateSell.toFixed(3), +e.rateBuy.toFixed(3),
+      +e.feePct.toFixed(2), +e.feeFlat.toFixed(2),
+      +e.spread.toFixed(2), +e.spreadPct.toFixed(2),
+      +(e.profitUsdt||0).toFixed(2), +e.profit.toFixed(2)
+    ]);
+  });
+  const wsDeals = XLSX.utils.aoa_to_sheet(dealsAOA);
+  wsDeals['!cols'] = [{wch:11},{wch:7},{wch:9},{wch:12},{wch:12},{wch:12},{wch:10},{wch:16},{wch:14},{wch:9},{wch:13},{wch:14}];
+  wsDeals['!views'] = [{state:'frozen', ySplit:1}];
+
+  // ---- Sheet 3: Расходы ----
+  const expAOA = [['Дата','Время','Сеть','Сумма, USDT','Комментарий']];
+  ex.forEach(e => {
+    const d = new Date(e.ts);
+    expAOA.push([dayLabel(dayKey(e.ts)), d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), e.network, +e.amount.toFixed(2), e.comment || '']);
+  });
+  const wsExp = XLSX.utils.aoa_to_sheet(expAOA);
+  wsExp['!cols'] = [{wch:11},{wch:7},{wch:10},{wch:12},{wch:28}];
+  wsExp['!views'] = [{state:'frozen', ySplit:1}];
+
+  // ---- Sheet 4: Депозит (операции) ----
+  const depAOA = [['Дата','Время','Тип','Сумма, USDT','Комментарий']];
+  depOpsAll.forEach(op => {
+    const d = new Date(op.ts);
+    depAOA.push([dayLabel(dayKey(op.ts)), d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),
+      op.type === 'in' ? 'Пополнение' : 'Снятие', +op.amount.toFixed(2), op.comment || '']);
+  });
+  const wsDep = XLSX.utils.aoa_to_sheet(depAOA);
+  wsDep['!cols'] = [{wch:11},{wch:7},{wch:13},{wch:12},{wch:28}];
+  wsDep['!views'] = [{state:'frozen', ySplit:1}];
+
+  // ---- Sheet 5: Заморожено (текущий снимок, не привязан к периоду) ----
+  const frozenNow = getFrozen();
+  const frozenAOA = [['Дата заморозки','Время','Сумма, USDT','Комментарий']];
+  frozenNow.forEach(f => {
+    const d = new Date(f.ts);
+    frozenAOA.push([dayLabel(dayKey(f.ts)), d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), +f.amount.toFixed(2), f.comment || '']);
+  });
+  frozenAOA.push(['ИТОГО ЗАМОРОЖЕНО', '', +frozenNow.reduce((s,f)=>s+f.amount,0).toFixed(2), '']);
+  const wsFrozen = XLSX.utils.aoa_to_sheet(frozenAOA);
+  wsFrozen['!cols'] = [{wch:14},{wch:7},{wch:12},{wch:28}];
+  wsFrozen['!views'] = [{state:'frozen', ySplit:1}];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, wsDays, 'Итоги по дням');
+  XLSX.utils.book_append_sheet(wb, wsDeals, 'Сделки');
+  XLSX.utils.book_append_sheet(wb, wsExp, 'Расходы');
+  XLSX.utils.book_append_sheet(wb, wsDep, 'Депозит');
+  XLSX.utils.book_append_sheet(wb, wsFrozen, 'Заморожено (сейчас)');
+
+  const fromLabel = $('rangeFrom').value ? $('rangeFrom').value.split('-').reverse().join('-') : 'nachalo';
+  const toLabel = $('rangeTo').value ? $('rangeTo').value.split('-').reverse().join('-') : 'seychas';
+  const fileTag = fromLabel === toLabel ? fromLabel : `${fromLabel}_${toLabel}`;
+  XLSX.writeFile(wb, `p2p_otchet_${fileTag}.xlsx`);
+});
+
+// ---------- excel import ----------
+$('importExcelBtn').addEventListener('click', () => $('importExcelFile').click());
+
+$('importExcelFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+
+  if(typeof XLSX === 'undefined'){
+    await showAlert('Для импорта нужен интернет (один раз подгружается компонент для чтения файла). Проверь соединение и попробуй ещё раз.');
+    return;
+  }
+
+  let wb;
+  try{
+    const buf = await file.arrayBuffer();
+    wb = XLSX.read(buf, {type:'array'});
+  } catch(err){
+    await showAlert('Не удалось прочитать файл. Убедись, что это Excel-отчёт, экспортированный из этого приложения.');
+    return;
+  }
+
+  function parseRuDateTime(dateStr, timeStr){
+    if(!dateStr) return Date.now();
+    const [d, m, y] = String(dateStr).split('.').map(n => parseInt(n, 10));
+    let hh = 0, mm = 0;
+    if(timeStr){ const [h, mi] = String(timeStr).split(':').map(n => parseInt(n, 10)); hh = h||0; mm = mi||0; }
+    const dt = new Date(y, (m||1)-1, d||1, hh, mm, 0, 0);
+    return dt.getTime();
+  }
+  function sheetRows(name){
+    const ws = wb.Sheets[name];
+    if(!ws) return [];
+    const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+    return rows.slice(1); // drop header
+  }
+
+  const dealsRows = sheetRows('Сделки');
+  const expRows = sheetRows('Расходы');
+  const depRows = sheetRows('Депозит');
+
+  if(dealsRows.length === 0 && expRows.length === 0 && depRows.length === 0){
+    await showAlert('В файле не нашлось узнаваемых данных (листы «Сделки», «Расходы», «Депозит» пусты или отсутствуют).');
+    return;
+  }
+
+  // existing timestamps, to avoid duplicating on repeated import
+  const archive = getArchive();
+  const current = getCurrentSession();
+  const existingDealTs = new Set(), existingExpTs = new Set(), existingDepTs = new Set();
+  [...archive, ...(current ? [current] : [])].forEach(s => {
+    (s.deals||[]).forEach(d => existingDealTs.add(d.ts));
+    (s.expenses||[]).forEach(d => existingExpTs.add(d.ts));
+    (s.depositOps||[]).forEach(d => existingDepTs.add(d.ts));
+  });
+
+  const byDate = {}; // dateKey -> {deals:[], expenses:[], depositOps:[]}
+  function bucket(dateKey){
+    if(!byDate[dateKey]) byDate[dateKey] = {deals:[], expenses:[], depositOps:[]};
+    return byDate[dateKey];
+  }
+
+  let addedDeals=0, addedExp=0, addedDep=0, skipped=0;
+
+  dealsRows.forEach(r => {
+    if(!r[0]) return;
+    const ts = parseRuDateTime(r[0], r[1]);
+    if(existingDealTs.has(ts)){ skipped++; return; }
+    const deal = {
+      currency: r[2] || 'RUB', amount: +r[3]||0, rateSell: +r[4]||0, rateBuy: +r[5]||0,
+      feePct: +r[6]||0, feeFlat: +r[7]||0, spread: +r[8]||0, spreadPct: +r[9]||0,
+      profitUsdt: +r[10]||0, profit: +r[11]||0, ts
+    };
+    bucket(dayKey(ts)).deals.push(deal);
+    addedDeals++;
+  });
+
+  expRows.forEach(r => {
+    if(!r[0]) return;
+    const ts = parseRuDateTime(r[0], r[1]);
+    if(existingExpTs.has(ts)){ skipped++; return; }
+    const exp = { network: r[2] || '', amount: +r[3]||0, comment: r[4] || '', ts };
+    bucket(dayKey(ts)).expenses.push(exp);
+    addedExp++;
+  });
+
+  depRows.forEach(r => {
+    if(!r[0]) return;
+    const ts = parseRuDateTime(r[0], r[1]);
+    if(existingDepTs.has(ts)){ skipped++; return; }
+    const op = { type: r[2] === 'Пополнение' ? 'in' : 'out', amount: +r[3]||0, comment: r[4] || '', ts };
+    bucket(dayKey(ts)).depositOps.push(op);
+    addedDep++;
+  });
+
+  const dateKeys = Object.keys(byDate);
+  if(dateKeys.length === 0){
+    await showAlert(`Новых данных не нашлось — похоже, этот файл уже был импортирован раньше (пропущено дублей: ${skipped}).`);
+    return;
+  }
+
+  dateKeys.forEach(dateKey => {
+    const bucketData = byDate[dateKey];
+    const importLabel = dayLabel(dateKey) + ' (импорт)';
+    let target = archive.find(s => s.id && String(s.id).startsWith('import_' + dateKey));
+    if(target){
+      target.deals = [...bucketData.deals, ...target.deals];
+      target.expenses = [...bucketData.expenses, ...target.expenses];
+      target.depositOps = [...bucketData.depositOps, ...target.depositOps];
+    } else {
+      target = {
+        id: 'import_' + dateKey + '_' + Date.now(),
+        label: importLabel, comment: '', startDeposit: 0,
+        startedAt: Math.min(...[...bucketData.deals, ...bucketData.expenses, ...bucketData.depositOps].map(x=>x.ts)),
+        closedAt: Date.now(),
+        deals: bucketData.deals, expenses: bucketData.expenses, depositOps: bucketData.depositOps, losses: [],
+        frozenAtClose: 0
+      };
+      archive.push(target);
+    }
+    target.deals.sort((a,b)=>b.ts-a.ts);
+    target.expenses.sort((a,b)=>b.ts-a.ts);
+    target.depositOps.sort((a,b)=>b.ts-a.ts);
+    target.endBalance = +sessionBalanceParts(target).balance.toFixed(2);
+  });
+
+  archive.sort((a,b) => (b.startedAt||b.id) - (a.startedAt||a.id));
+  saveArchive(archive);
+  renderReportsTab();
+
+  await showAlert(
+    `Импорт завершён.\n\nСделок: ${addedDeals}\nРасходов: ${addedExp}\nОпераций с депозитом: ${addedDep}\nДней: ${dateKeys.length}` +
+    (skipped > 0 ? `\n\nПропущено дублей (уже были в архиве): ${skipped}` : '')
+  );
+});
+
+// ---------- full JSON backup / restore (Отчёты tab) ----------
+function buildBackupObject(){
+  return {
+    app: 'p2p-amacy',
+    version: 1,
+    exportedAt: Date.now(),
+    data: {
+      [STORAGE_KEY]: loadJSON(STORAGE_KEY, null),
+      [CURRENT_SESSION_KEY]: loadJSON(CURRENT_SESSION_KEY, null),
+      [ARCHIVE_KEY]: loadJSON(ARCHIVE_KEY, null),
+      [FROZEN_KEY]: loadJSON(FROZEN_KEY, null),
+      [RESERVE_KEY]: loadJSON(RESERVE_KEY, null),
+    }
+  };
+}
+$('exportJsonBtn').addEventListener('click', () => {
+  const obj = buildBackupObject();
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `p2p_amacy_backup_${dateToInputValue(new Date())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+$('importJsonBtn').addEventListener('click', () => $('importJsonFile').click());
+$('importJsonFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+
+  let obj;
+  try{
+    const text = await file.text();
+    obj = JSON.parse(text);
+  } catch(err){
+    await showAlert('Не удалось прочитать файл — это должен быть JSON-бэкап, экспортированный этим приложением.');
+    return;
+  }
+  if(!obj || typeof obj !== 'object' || !obj.data){
+    await showAlert('Файл не похож на бэкап этого приложения.');
+    return;
+  }
+
+  const ok = await showConfirm('Восстановить данные из бэкапа?\n\nЭто ПОЛНОСТЬЮ заменит текущие сделки, расходы, депозит, архив дней, заморозки и резерв содержимым файла. Отменить это действие нельзя.');
+  if(!ok) return;
+
+  const d = obj.data;
+  if(d[STORAGE_KEY] !== undefined && d[STORAGE_KEY] !== null) saveJSON(STORAGE_KEY, d[STORAGE_KEY]);
+  if(d[CURRENT_SESSION_KEY] !== undefined) saveJSON(CURRENT_SESSION_KEY, d[CURRENT_SESSION_KEY]);
+  if(d[ARCHIVE_KEY] !== undefined && d[ARCHIVE_KEY] !== null) saveJSON(ARCHIVE_KEY, d[ARCHIVE_KEY]);
+  if(d[FROZEN_KEY] !== undefined && d[FROZEN_KEY] !== null) saveJSON(FROZEN_KEY, d[FROZEN_KEY]);
+  if(d[RESERVE_KEY] !== undefined && d[RESERVE_KEY] !== null) saveJSON(RESERVE_KEY, d[RESERVE_KEY]);
+
+  await showAlert('Бэкап восстановлен. Сейчас приложение перезагрузится.');
+  location.reload();
+});
+
+// ---------- init ----------
+(function init(){
+  migrateOldDataIfNeeded();
+  populateConverterCurrencySelects();
+
+  const s = loadJSON(STORAGE_KEY, {});
+  applyTheme(s.theme || 'dark');
+  lastRatesByCurrency = s.lastRatesByCurrency || {};
+  if(s.currency === 'usdt') document.querySelector('[data-curr="usdt"]').click();
+  if(s.fiatCurrency && CURRENCIES[s.fiatCurrency]) currentFiatCurrency = s.fiatCurrency;
+  updateFiatLabels();
+  if(s.amount) $('amount').value = s.amount;
+  if(s.rateSell) $('rateSell').value = s.rateSell;
+  if(s.rateBuy) $('rateBuy').value = s.rateBuy;
+  if(s.feePct) $('feePct').value = s.feePct;
+  if(s.feeFlat) $('feeFlat').value = s.feeFlat;
+  if(s.minThreshold) $('minThreshold').value = s.minThreshold;
+  if(s.goalTarget) $('goalTarget').value = s.goalTarget;
+  if(s.reservePct) $('reservePct').value = s.reservePct;
+  calc();
+
+  const todayStr = dateToInputValue(new Date());
+  $('rangeFrom').value = todayStr;
+  $('rangeTo').value = todayStr;
+
+  renderDayStatus();
+  checkBotPrompt();
+})();
+
+</script>
+</body>
+</html>
