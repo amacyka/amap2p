@@ -54,10 +54,17 @@
     -webkit-appearance:none;appearance:none;transition:border-color .2s,background .2s;}
   input:focus,select:focus{border-color:rgba(255,255,255,.22);background:var(--card);}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .preset-btns{display:flex;gap:6px;margin-top:6px;}
-  .preset-btn{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:8px;
-    padding:6px 0;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;}
+  .preset-btns{display:flex;gap:6px;margin-top:6px;justify-content:center;}
+  .preset-btn{flex:0 0 auto;background:var(--card2);border:1px solid var(--border);border-radius:8px;
+    padding:6px 16px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;}
   .preset-btn:active{background:var(--border);}
+  .amount-input-wrap{position:relative;}
+  .amount-input-wrap input{padding-right:44px;}
+  .amount-clear-btn{position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; padding:0; margin:0; border-radius:50%; background:var(--card2); border:1px solid var(--border);
+    color:var(--muted); font-size:14px; line-height:1; font-family:inherit; -webkit-appearance:none; appearance:none;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .amount-clear-btn:active{background:var(--border);}
   .toggle-group{display:flex;background:var(--card2);border-radius:12px;padding:3px;border:1px solid var(--border);}
   .toggle-opt{flex:1;text-align:center;padding:8px 4px;border-radius:9px;font-size:13px;font-weight:600;
     color:var(--muted);cursor:pointer;transition:background .2s,color .2s;}
@@ -125,7 +132,10 @@
   .period-btn{flex:1;min-width:44px;text-align:center;background:var(--card2);border:1px solid var(--border);
     border-radius:9px;padding:8px 4px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
   .period-btn.active{background:var(--accent);color:#062015;border-color:var(--accent);}
+  .reports-subview{display:none;}
+  .reports-subview.active{display:block;}
   .section-title{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 10px;text-transform:uppercase;letter-spacing:.03em;}
+  .section-title-note{font-weight:500;text-transform:none;letter-spacing:0;font-size:11.5px;margin-left:6px;opacity:.75;}
   .day-row{cursor:pointer;}
   .day-row:active{background:var(--border);}
   .day-row .chevron{align-self:flex-end;margin-top:-28px;color:var(--muted);font-size:14px;}
@@ -189,6 +199,38 @@
   }
   .modal-message{font-size:14px; line-height:1.5; white-space:pre-line; margin-bottom:16px;}
 
+  /* ---------- currency select button + picker modal ---------- */
+  .currency-select-btn{
+    width:100%; text-align:left; background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px; color:var(--text); font-size:17px; font-weight:600;
+    cursor:pointer; transition:border-color .2s,background .2s;
+  }
+  .currency-select-btn:active{background:var(--card);}
+  .currency-picker-box{max-width:420px; max-height:80vh; display:flex; flex-direction:column; padding:16px;}
+  .currency-picker-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .currency-picker-title{font-size:15px; font-weight:700;}
+  .currency-picker-close{background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:2px 6px;}
+  .currency-picker-search{
+    width:100%; background:var(--card2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 13px; color:var(--text); font-size:15px; outline:none; margin-bottom:10px; flex-shrink:0;
+  }
+  .currency-picker-search:focus{border-color:rgba(255,255,255,.22);}
+  .currency-picker-list{overflow-y:auto; flex:1; min-height:0;}
+  .currency-picker-item{
+    display:flex; align-items:center; gap:12px; padding:11px 8px; border-radius:10px; cursor:pointer;
+  }
+  .currency-picker-item:active{background:var(--card2);}
+  .currency-picker-item.active{background:var(--card2);}
+  .currency-picker-item .cp-symbol{
+    width:34px; height:34px; border-radius:9px; background:var(--card2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;
+  }
+  .currency-picker-item .cp-info{min-width:0; flex:1;}
+  .currency-picker-item .cp-code{font-size:14px; font-weight:700;}
+  .currency-picker-item .cp-name{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .currency-picker-item .cp-check{color:var(--accent); font-size:16px; flex-shrink:0;}
+  .currency-picker-empty{text-align:center; color:var(--muted); font-size:13px; padding:24px 0;}
+
   .goal-block{margin-top:16px; padding-top:16px; border-top:1px solid var(--border);}
   .goal-progress-bar{
     width:100%; height:14px; border-radius:8px; background:var(--card2);
@@ -200,6 +242,61 @@
   }
   .goal-progress-fill.complete{background:var(--usdt);}
   .goal-progress-text{font-size:13px; color:var(--muted); margin-top:8px; text-align:center; line-height:1.4;}
+
+  /* ---------- per-currency period metrics ---------- */
+  .curr-block{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;}
+  .curr-block:last-child{margin-bottom:0;}
+  .curr-block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .curr-profit-row{background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .curr-profit-row .k{font-size:11px;color:var(--muted);margin-bottom:3px;}
+  .curr-profit-row .v{font-size:17px;font-weight:700;color:var(--text);}
+  .curr-profit-row .v.pos{color:var(--accent);}
+  .curr-profit-row .v.neg{color:var(--red);}
+  .curr-profit-row .v span{font-size:12.5px;font-weight:500;color:var(--muted);}
+  .curr-badge{font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--text);background:var(--card);
+    border:1px solid var(--border);border-radius:8px;padding:3px 10px;}
+  .curr-count{font-size:12px;color:var(--muted);}
+  .curr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .curr-item{background:var(--card);border-radius:10px;padding:9px 11px;}
+  .curr-item.full{grid-column:1 / -1;}
+  .curr-item .k{font-size:11px;color:var(--muted);margin-bottom:3px;}
+  .curr-item .v{font-size:14px;font-weight:600;color:var(--text);}
+
+  /* ---------- period vs previous-period compare badge ---------- */
+  .period-compare{font-size:12px;margin-top:6px;font-weight:600;}
+  .period-compare.pos{color:var(--accent);}
+  .period-compare.neg{color:var(--red);}
+  .period-compare.muted{color:var(--muted);font-weight:500;}
+
+  /* ---------- mini month calendar ---------- */
+  .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .cal-nav-btn{background:var(--card2);border:1px solid var(--border);border-radius:8px;
+    width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:15px;
+    color:var(--text);cursor:pointer;}
+  .cal-label{font-size:13px;font-weight:700;text-transform:capitalize;}
+  .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
+  .cal-dow{text-align:center;font-size:10px;color:var(--muted);font-weight:600;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;
+    font-size:11px;color:var(--muted);background:var(--card2);}
+  .cal-cell.empty-cell{background:transparent;}
+  .cal-cell.has-data{cursor:pointer;font-weight:700;color:var(--text);}
+  .cal-cell.pos{background:rgba(143,217,180,.16);color:var(--accent);}
+  .cal-cell.neg{background:rgba(217,139,134,.16);color:var(--red);}
+  .cal-cell:active.has-data{opacity:.7;}
+
+  /* ---------- reserve / set-aside ---------- */
+  .reserve-hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4;}
+
+  /* ---------- time-of-day stats ---------- */
+  .tod-row{margin-bottom:10px;}
+  .tod-row:last-child{margin-bottom:0;}
+  .tod-head{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted);margin-bottom:4px;}
+  .tod-head b{color:var(--text);font-weight:700;}
+  .tod-head b.neg{color:var(--red);}
+  .tod-bar-bg{width:100%;height:10px;border-radius:6px;background:var(--card2);overflow:hidden;border:1px solid var(--border);}
+  .tod-bar-fill{height:100%;border-radius:6px;background:var(--accent);transition:width .3s ease;}
+  .tod-bar-fill.neg{background:var(--red);}
 </style>
 </head>
 <body>
@@ -222,12 +319,8 @@
   <div class="panel active" id="tab-calc">
 
     <div class="field" style="margin-bottom:12px;">
-      <div class="currency-grid" id="fiatCurrencyToggle">
-        <div class="toggle-opt fiat-opt active" data-fiat="RUB">₽ RUB</div>
-        <div class="toggle-opt fiat-opt" data-fiat="TRY">₺ TRY</div>
-        <div class="toggle-opt fiat-opt" data-fiat="INR">₹ INR</div>
-        <div class="toggle-opt fiat-opt" data-fiat="KZT">₸ KZT</div>
-      </div>
+      <label>Валюта пары</label>
+      <button type="button" class="currency-select-btn" id="fiatCurrencyBtn">₽ RUB ▾</button>
     </div>
 
     <div class="card">
@@ -243,7 +336,10 @@
 
       <div class="field">
         <label id="amountLabel">Сумма сделки, ₽</label>
-        <input type="number" id="amount" value="85000" step="any" inputmode="decimal">
+        <div class="amount-input-wrap">
+          <input type="number" id="amount" value="85000" step="any" inputmode="decimal">
+          <button type="button" class="amount-clear-btn" id="amountClearBtn">&times;</button>
+        </div>
         <div class="conv-hint" id="convHint"></div>
       </div>
 
@@ -283,6 +379,7 @@
         <label>Мой порог прибыли, % (для подсветки)</label>
         <input type="number" id="minThreshold" value="2" step="any" inputmode="decimal">
       </div>
+
     </div>
 
     <div class="result">
@@ -321,22 +418,12 @@
         <div class="row2">
           <div class="field">
             <label>Из валюты</label>
-            <select id="convFromCur">
-              <option value="RUB">₽ RUB</option>
-              <option value="TRY">₺ TRY</option>
-              <option value="INR">₹ INR</option>
-              <option value="KZT">₸ KZT</option>
-            </select>
+            <select id="convFromCur"></select>
             <input type="number" id="convFromRate" value="85" step="any" inputmode="decimal" placeholder="курс к USDT" style="margin-top:6px;">
           </div>
           <div class="field">
             <label>В валюту</label>
-            <select id="convToCur">
-              <option value="RUB">₽ RUB</option>
-              <option value="TRY" selected>₺ TRY</option>
-              <option value="INR">₹ INR</option>
-              <option value="KZT">₸ KZT</option>
-            </select>
+            <select id="convToCur"></select>
             <input type="number" id="convToRate" value="35" step="any" inputmode="decimal" placeholder="курс к USDT" style="margin-top:6px;">
           </div>
         </div>
@@ -480,74 +567,138 @@
       <button class="btn btn-primary" id="closeDayBtn" style="width:100%;margin-top:10px;">▶️ Открыть новый день</button>
     </div>
 
-    <div class="result">
-      <div class="result-main">
-        <div class="label" id="periodLabel">Профит за период, USDT</div>
-        <div class="value" id="periodProfitUsdt">0 USDT</div>
-        <div class="value2" id="periodProfitRub">≈ 0 ₽</div>
-        <div class="result-sub" id="periodDealsCount"></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="k">Расходы</div><div class="v" id="periodExpenses">0 USDT</div></div>
-        <div class="stat"><div class="k">Потери</div><div class="v" id="periodLosses">0 USDT</div></div>
-        <div class="stat"><div class="k">Чистыми (USDT)</div><div class="v" id="periodNet">0 USDT</div></div>
-      </div>
-
-      <div class="goal-block">
-        <div class="field" style="margin-bottom:10px;">
-          <label>Цель на этот период, USDT</label>
-          <input type="number" id="goalTarget" step="any" inputmode="decimal" placeholder="напр. 300">
-        </div>
-        <div class="goal-progress-bar"><div class="goal-progress-fill" id="goalProgressFill"></div></div>
-        <div class="goal-progress-text" id="goalProgressText">Задай цель, чтобы видеть прогресс</div>
-      </div>
+    <div class="period-btns" id="reportsSubNav" style="margin-bottom:12px;">
+      <div class="period-btn active" data-subview="overview">Обзор</div>
+      <div class="period-btn" data-subview="analytics">Аналитика</div>
+      <div class="period-btn" data-subview="data">Данные</div>
     </div>
 
-    <div class="card">
-      <div class="section-title">Общая картина</div>
-      <div class="overview-grid">
-        <div class="overview-item">
-          <div class="overview-icon">💸</div>
-          <div class="overview-label">Расходы сегодня</div>
-          <div class="overview-value neg" id="totalExpensesAllTime">0 USDT</div>
+    <!-- ---------- Обзор ---------- -->
+    <div class="reports-subview active" data-subview="overview">
+
+      <div class="card">
+        <div class="section-title">Сейчас <span class="section-title-note">не зависит от периода выше</span></div>
+        <div class="overview-grid">
+          <div class="overview-item">
+            <div class="overview-icon">💸</div>
+            <div class="overview-label">Расходы за сегодня</div>
+            <div class="overview-value neg" id="totalExpensesAllTime">0 USDT</div>
+          </div>
+          <div class="overview-item">
+            <div class="overview-icon">❌</div>
+            <div class="overview-label">Потери за сегодня</div>
+            <div class="overview-value neg" id="totalLossesAllTime">0 USDT</div>
+          </div>
+          <div class="overview-item">
+            <div class="overview-icon">🧊</div>
+            <div class="overview-label">Заморожено сейчас</div>
+            <div class="overview-value" id="totalFrozenNow">0 USDT</div>
+          </div>
+          <div class="overview-item">
+            <div class="overview-icon">🏦</div>
+            <div class="overview-label">Резерв</div>
+            <div class="overview-value" id="reserveTotal">0 USDT</div>
+          </div>
         </div>
-        <div class="overview-item">
-          <div class="overview-icon">❌</div>
-          <div class="overview-label">Потери сегодня</div>
-          <div class="overview-value neg" id="totalLossesAllTime">0 USDT</div>
+        <div class="field" style="margin-top:12px;margin-bottom:6px;">
+          <label>Откладывать в резерв, % от прибыли сделки</label>
+          <input type="number" id="reservePct" value="0" min="0" max="100" step="any" inputmode="decimal" placeholder="напр. 10">
         </div>
-        <div class="overview-item">
-          <div class="overview-icon">🧊</div>
-          <div class="overview-label">Заморожено сейчас</div>
-          <div class="overview-value" id="totalFrozenNow">0 USDT</div>
-        </div>
+        <div class="reserve-hint">При каждой прибыльной сделке часть прибыли откладывается в отдельный виртуальный резерв — он не влияет на остальные расчёты баланса.</div>
       </div>
+
+      <div class="card">
+        <div class="section-title">Дни</div>
+        <div class="cal-header">
+          <div class="cal-nav-btn" id="calPrevBtn">‹</div>
+          <div class="cal-label" id="calLabel"></div>
+          <div class="cal-nav-btn" id="calNextBtn">›</div>
+        </div>
+        <div class="cal-dow-row">
+          <div class="cal-dow">Пн</div><div class="cal-dow">Вт</div><div class="cal-dow">Ср</div>
+          <div class="cal-dow">Чт</div><div class="cal-dow">Пт</div><div class="cal-dow">Сб</div><div class="cal-dow">Вс</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="note" style="margin-top:12px;">Отчёты по дням (нажми, чтобы открыть)</div>
+        <div id="daysList" style="margin-top:8px;"><div class="empty">Пока нет завершённых дней</div></div>
+      </div>
+
     </div>
 
-    <div class="card">
-      <div class="section-title">Посмотреть за период</div>
-      <div class="row2">
-        <div class="field">
-          <label>С</label>
-          <input type="date" id="rangeFrom">
+    <!-- ---------- Аналитика ---------- -->
+    <div class="reports-subview" data-subview="analytics">
+
+      <div class="card">
+        <div class="section-title">Период</div>
+        <div class="row2">
+          <div class="field">
+            <label>С</label>
+            <input type="date" id="rangeFrom">
+          </div>
+          <div class="field">
+            <label>По</label>
+            <input type="date" id="rangeTo">
+          </div>
         </div>
-        <div class="field">
-          <label>По</label>
-          <input type="date" id="rangeTo">
+        <button class="btn btn-secondary" id="resetRangeBtn" style="width:100%;">📅 Сегодня</button>
+      </div>
+
+      <div class="result">
+        <div class="result-main">
+          <div class="label" id="periodLabel">Профит за период, USDT</div>
+          <div class="value" id="periodProfitUsdt">0 USDT</div>
+          <div class="value2" id="periodProfitRub">≈ 0 ₽</div>
+          <div class="result-sub" id="periodDealsCount"></div>
+          <div class="period-compare muted" id="periodCompare"></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k">Расходы</div><div class="v" id="periodExpenses">0 USDT</div></div>
+          <div class="stat"><div class="k">Потери</div><div class="v" id="periodLosses">0 USDT</div></div>
+          <div class="stat"><div class="k">Чистыми (USDT)</div><div class="v" id="periodNet">0 USDT</div></div>
+        </div>
+
+        <div class="goal-block">
+          <div class="field" style="margin-bottom:10px;">
+            <label>Цель на этот период, USDT</label>
+            <input type="number" id="goalTarget" step="any" inputmode="decimal" placeholder="напр. 300">
+          </div>
+          <div class="goal-progress-bar"><div class="goal-progress-fill" id="goalProgressFill"></div></div>
+          <div class="goal-progress-text" id="goalProgressText">Задай цель, чтобы видеть прогресс</div>
         </div>
       </div>
-      <button class="btn btn-secondary" id="resetRangeBtn" style="width:100%;margin-bottom:10px;">📅 Сегодня</button>
-      <button class="btn btn-primary" id="exportExcelBtn" style="width:100%;margin-top:4px;">📊 Скачать Excel за этот период</button>
-      <div class="note" id="exportHint">Экспортирует сделки, расходы и итоги по дням за выбранные даты.</div>
-      <button class="btn btn-secondary" id="importExcelBtn" style="width:100%;margin-top:10px;">⬆️ Импорт из Excel</button>
-      <input type="file" id="importExcelFile" accept=".xlsx,.xls" style="display:none;">
-      <div class="note">Загрузи ранее экспортированный файл — сделки, расходы и депозит подтянутся в архив, сгруппированные по дате.</div>
+
+      <div class="card" id="periodCurrencyCard">
+        <div class="section-title" id="periodCurrencyToggle" style="cursor:pointer;">Метрики по валютам за период ▾</div>
+        <div id="periodCurrencyMetrics" style="display:none;"><div class="empty">Нет сделок за выбранный период</div></div>
+      </div>
+
+      <div class="card" id="timeOfDayCard">
+        <div class="section-title" id="timeOfDayToggle" style="cursor:pointer;">Прибыльность по времени суток ▾</div>
+        <div id="timeOfDayList" style="display:none;"><div class="empty">Нет сделок за выбранный период</div></div>
+      </div>
+
     </div>
 
-    <div class="card">
-      <div class="section-title">Отчёты по дням (нажми, чтобы открыть)</div>
-      <div id="daysList"><div class="empty">Пока нет завершённых дней</div></div>
+    <!-- ---------- Данные ---------- -->
+    <div class="reports-subview" data-subview="data">
+
+      <div class="card">
+        <div class="section-title">Экспорт и импорт</div>
+        <button class="btn btn-primary" id="exportExcelBtn" style="width:100%;">📊 Скачать Excel за этот период</button>
+        <div class="note" id="exportHint">Экспортирует сделки, расходы и итоги по дням за выбранные даты.</div>
+        <button class="btn btn-secondary" id="importExcelBtn" style="width:100%;margin-top:10px;">⬆️ Импорт из Excel</button>
+        <input type="file" id="importExcelFile" accept=".xlsx,.xls" style="display:none;">
+        <div class="note">Загрузи ранее экспортированный файл — сделки, расходы и депозит подтянутся в архив, сгруппированные по дате.</div>
+
+        <button class="btn btn-secondary" id="exportJsonBtn" style="width:100%;margin-top:14px;">💾 Полный бэкап (JSON)</button>
+        <div class="note">Сохраняет вообще всё: текущий день, архив дней, заморозки, резерв и настройки — удобно перед сменой телефона.</div>
+        <button class="btn btn-secondary" id="importJsonBtn" style="width:100%;margin-top:10px;">⬆️ Восстановить из бэкапа JSON</button>
+        <input type="file" id="importJsonFile" accept=".json" style="display:none;">
+        <div class="note">Полностью заменит текущие данные содержимым выбранного файла.</div>
+      </div>
+
     </div>
+
   </div>
 
   <!-- ===================== START NEW DAY MODAL ===================== -->
@@ -672,6 +823,35 @@
     </div>
   </div>
 
+  <!-- ===================== CURRENCY PICKER MODAL ===================== -->
+  <div class="modal-overlay" id="currencyPickerOverlay">
+    <div class="modal-box currency-picker-box">
+      <div class="currency-picker-head">
+        <div class="currency-picker-title">Выбери валюту</div>
+        <button type="button" class="currency-picker-close" id="currencyPickerClose">✕</button>
+      </div>
+      <input type="text" id="currencyPickerSearch" class="currency-picker-search" placeholder="Поиск: код или название" inputmode="search" autocomplete="off">
+      <div class="currency-picker-list" id="currencyPickerList"></div>
+    </div>
+  </div>
+
+  <!-- ===================== BOT SIGNUP PROMPT MODAL ===================== -->
+  <div class="modal-overlay" id="botPromptModal">
+    <div class="modal-box">
+      <div class="currency-picker-head" style="margin-bottom:12px;">
+        <div class="currency-picker-title">Отметься в боте</div>
+        <button type="button" class="currency-picker-close" id="botPromptCloseBtn">✕</button>
+      </div>
+      <div class="modal-message">Чтобы не пропускать обновления и важные сообщения — нажми кнопку, бот отметит тебя автоматически.</div>
+      <a href="https://t.me/amacy_p2p_bot?start=calc" target="_blank" rel="noopener" class="tg-btn" id="botPromptGoBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.5 3.5L2.5 11L9 13.5M21.5 3.5L18.5 20.5L9 13.5M21.5 3.5L9 13.5M9 13.5V19.5L12.5 16" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Открыть бота
+      </a>
+    </div>
+  </div>
+
   <a href="https://t.me/camalyr" target="_blank" rel="noopener" class="tg-btn">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M21.5 3.5L2.5 11L9 13.5M21.5 3.5L18.5 20.5L9 13.5M21.5 3.5L9 13.5M9 13.5V19.5L12.5 16" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -755,11 +935,43 @@ function sessionBalanceParts(session){
   return {start: session.startDeposit||0, profitUsdt, profitRub, feesUsdt, inUsdt, outUsdt, lossesUsdt, balance, dealsCount: session.deals.length};
 }
 
+// ---------- bot signup prompt (shows on up to 2 distinct calendar days, then never again) ----------
+const BOT_PROMPT_KEY = 'p2p_bot_prompt_v1';
+function checkBotPrompt(){
+  try{
+    const state = JSON.parse(localStorage.getItem(BOT_PROMPT_KEY) || '{}');
+    const shownDates = state.shownDates || [];
+    if(state.clicked) return;
+    const todayStr = new Date().toDateString();
+    if(shownDates.includes(todayStr)) return;
+    if(shownDates.length >= 2) return;
+    shownDates.push(todayStr);
+    localStorage.setItem(BOT_PROMPT_KEY, JSON.stringify({shownDates, clicked: !!state.clicked}));
+    $('botPromptModal').classList.add('open');
+  }catch(e){}
+}
+document.getElementById('botPromptGoBtn').addEventListener('click', () => {
+  try{
+    const state = JSON.parse(localStorage.getItem(BOT_PROMPT_KEY) || '{}');
+    state.clicked = true;
+    localStorage.setItem(BOT_PROMPT_KEY, JSON.stringify(state));
+  }catch(e){}
+  $('botPromptModal').classList.remove('open');
+});
+document.getElementById('botPromptCloseBtn').addEventListener('click', () => {
+  $('botPromptModal').classList.remove('open');
+});
+
 // ---------- frozen funds (global, not tied to any single day) ----------
 const FROZEN_KEY = 'p2p_frozen_v1';
 function getFrozen(){ return loadJSON(FROZEN_KEY, []); }
 function saveFrozen(arr){ saveJSON(FROZEN_KEY, arr); }
 function totalFrozen(){ return getFrozen().reduce((s,f)=>s+f.amount,0); }
+
+// ---------- reserve / set-aside (global, separate virtual balance) ----------
+const RESERVE_KEY = 'p2p_reserve_v1';
+function getReserve(){ return loadJSON(RESERVE_KEY, {total:0}); }
+function saveReserve(r){ saveJSON(RESERVE_KEY, r); }
 
 // ---------- one-time migration from old calendar-day model ----------
 function migrateOldDataIfNeeded(){
@@ -832,6 +1044,7 @@ function saveState(){
     feeFlat: $('feeFlat').value,
     minThreshold: $('minThreshold').value,
     goalTarget: $('goalTarget').value,
+    reservePct: $('reservePct').value,
   });
 }
 
@@ -851,11 +1064,29 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 // ---------- fiat currency (pair) selection ----------
+// Top ~20 fiat currencies actually used in P2P crypto arbitrage (RUB/TRY/INR/KZT plus the
+// next most common ones traded on P2P desks like Bybit P2P).
 const CURRENCIES = {
-  RUB: { symbol: '₽', short: 'RUB' },
-  TRY: { symbol: '₺', short: 'TRY' },
-  INR: { symbol: '₹', short: 'INR' },
-  KZT: { symbol: '₸', short: 'KZT' },
+  RUB: { symbol: '₽',    name: 'Российский рубль' },
+  TRY: { symbol: '₺',    name: 'Турецкая лира' },
+  INR: { symbol: '₹',    name: 'Индийская рупия' },
+  KZT: { symbol: '₸',    name: 'Казахстанский тенге' },
+  USD: { symbol: '$',    name: 'Доллар США' },
+  EUR: { symbol: '€',    name: 'Евро' },
+  UAH: { symbol: '₴',    name: 'Украинская гривна' },
+  AED: { symbol: 'د.إ',  name: 'Дирхам ОАЭ' },
+  NGN: { symbol: '₦',    name: 'Нигерийская найра' },
+  VND: { symbol: '₫',    name: 'Вьетнамский донг' },
+  PKR: { symbol: '₨',    name: 'Пакистанская рупия' },
+  BRL: { symbol: 'R$',   name: 'Бразильский реал' },
+  ARS: { symbol: 'AR$',  name: 'Аргентинское песо' },
+  COP: { symbol: 'COL$', name: 'Колумбийское песо' },
+  MXN: { symbol: 'MX$',  name: 'Мексиканское песо' },
+  PHP: { symbol: '₱',    name: 'Филиппинское песо' },
+  THB: { symbol: '฿',    name: 'Тайский бат' },
+  IDR: { symbol: 'Rp',   name: 'Индонезийская рупия' },
+  EGP: { symbol: 'E£',   name: 'Египетский фунт' },
+  ZAR: { symbol: 'R',    name: 'Южноафриканский рэнд' },
 };
 function currencySymbol(code){ return (CURRENCIES[code] || CURRENCIES.RUB).symbol; }
 
@@ -867,25 +1098,71 @@ function updateFiatLabels(){
   $('rateBuyLabel').textContent = `Курс покупки (${sym})`;
   $('feeFlatLabel').textContent = `Комиссия фикс., ${sym}`;
   document.querySelector('#currToggle .toggle-opt[data-curr="rub"]').textContent = `В ${sym}`;
+  $('fiatCurrencyBtn').textContent = `${sym} ${currentFiatCurrency} ▾`;
 }
 let lastRatesByCurrency = {};
-document.querySelectorAll('#fiatCurrencyToggle .fiat-opt').forEach(opt => {
-  opt.addEventListener('click', () => {
-    // remember the rates we were just using for the currency we're leaving
-    lastRatesByCurrency[currentFiatCurrency] = {
-      rateSell: $('rateSell').value,
-      rateBuy: $('rateBuy').value,
-    };
-    document.querySelectorAll('#fiatCurrencyToggle .fiat-opt').forEach(o => o.classList.remove('active'));
-    opt.classList.add('active');
-    currentFiatCurrency = opt.dataset.fiat;
-    // restore whatever rates were last used for this currency, if any
-    const saved = lastRatesByCurrency[currentFiatCurrency];
-    if(saved){ $('rateSell').value = saved.rateSell; $('rateBuy').value = saved.rateBuy; }
-    updateFiatLabels();
-    calc(); saveState();
+
+function selectFiatCurrency(code){
+  if(!CURRENCIES[code] || code === currentFiatCurrency) return;
+  // remember the rates we were just using for the currency we're leaving
+  lastRatesByCurrency[currentFiatCurrency] = {
+    rateSell: $('rateSell').value,
+    rateBuy: $('rateBuy').value,
+  };
+  currentFiatCurrency = code;
+  // restore whatever rates were last used for this currency, if any
+  const saved = lastRatesByCurrency[currentFiatCurrency];
+  if(saved){ $('rateSell').value = saved.rateSell; $('rateBuy').value = saved.rateBuy; }
+  updateFiatLabels();
+  calc(); saveState();
+}
+
+// ---------- currency picker modal (search + list, replaces the old 4-button row) ----------
+function renderCurrencyPickerList(filterText){
+  const list = $('currencyPickerList');
+  const q = (filterText || '').trim().toLowerCase();
+  const codes = Object.keys(CURRENCIES).filter(code => {
+    if(!q) return true;
+    const c = CURRENCIES[code];
+    return code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q);
   });
+  if(codes.length === 0){
+    list.innerHTML = '<div class="currency-picker-empty">Ничего не найдено</div>';
+    return;
+  }
+  list.innerHTML = codes.map(code => {
+    const c = CURRENCIES[code];
+    const isActive = code === currentFiatCurrency;
+    return `
+      <div class="currency-picker-item ${isActive ? 'active' : ''}" data-code="${code}">
+        <div class="cp-symbol">${c.symbol}</div>
+        <div class="cp-info">
+          <div class="cp-code">${code}</div>
+          <div class="cp-name">${c.name}</div>
+        </div>
+        ${isActive ? '<div class="cp-check">✓</div>' : ''}
+      </div>
+    `;
+  }).join('');
+  list.querySelectorAll('.currency-picker-item').forEach(item => {
+    item.addEventListener('click', () => {
+      selectFiatCurrency(item.dataset.code);
+      $('currencyPickerOverlay').classList.remove('open');
+    });
+  });
+}
+function openCurrencyPicker(){
+  $('currencyPickerSearch').value = '';
+  renderCurrencyPickerList('');
+  $('currencyPickerOverlay').classList.add('open');
+  setTimeout(() => $('currencyPickerSearch').focus(), 50);
+}
+$('fiatCurrencyBtn').addEventListener('click', openCurrencyPicker);
+$('currencyPickerClose').addEventListener('click', () => $('currencyPickerOverlay').classList.remove('open'));
+$('currencyPickerOverlay').addEventListener('click', (e) => {
+  if(e.target === $('currencyPickerOverlay')) $('currencyPickerOverlay').classList.remove('open');
 });
+$('currencyPickerSearch').addEventListener('input', (e) => renderCurrencyPickerList(e.target.value));
 
 // ---------- currency toggle for amount ----------
 let currentCurrency = 'rub';
@@ -994,6 +1271,36 @@ $('converterToggle').addEventListener('click', () => {
   $('converterToggle').textContent = 'Мини-конвертер валют ' + (isOpen ? '▾' : '▴');
   if(!isOpen) renderConverter();
 });
+
+// ---------- Отчёты: collapsible cards (метрики по валютам / время суток) ----------
+$('periodCurrencyToggle').addEventListener('click', () => {
+  const body = $('periodCurrencyMetrics');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  $('periodCurrencyToggle').textContent = 'Метрики по валютам за период ' + (isOpen ? '▾' : '▴');
+});
+$('timeOfDayToggle').addEventListener('click', () => {
+  const body = $('timeOfDayList');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  $('timeOfDayToggle').textContent = 'Прибыльность по времени суток ' + (isOpen ? '▾' : '▴');
+});
+
+// ---------- Отчёты: sub-navigation (Обзор / Аналитика / Данные) ----------
+function showReportsSubview(name){
+  document.querySelectorAll('#reportsSubNav .period-btn').forEach(b => b.classList.toggle('active', b.dataset.subview === name));
+  document.querySelectorAll('.reports-subview').forEach(v => v.classList.toggle('active', v.dataset.subview === name));
+}
+document.querySelectorAll('#reportsSubNav .period-btn').forEach(btn => {
+  btn.addEventListener('click', () => showReportsSubview(btn.dataset.subview));
+});
+function populateConverterCurrencySelects(){
+  const opts = Object.keys(CURRENCIES).map(code => `<option value="${code}">${CURRENCIES[code].symbol} ${code}</option>`).join('');
+  $('convFromCur').innerHTML = opts;
+  $('convToCur').innerHTML = opts;
+  $('convFromCur').value = 'RUB';
+  $('convToCur').value = 'TRY';
+}
 function renderConverter(){
   const amount = parseFloat($('convAmount').value) || 0;
   const fromRate = parseFloat($('convFromRate').value) || 0;
@@ -1012,6 +1319,12 @@ document.querySelectorAll('#convAmount, #convFromRate, #convToRate, #convFromCur
 
 document.querySelectorAll('#tab-calc input').forEach(el => {
   el.addEventListener('input', () => { calc(); saveState(); });
+});
+
+document.getElementById('amountClearBtn').addEventListener('click', () => {
+  $('amount').value = '';
+  calc(); saveState();
+  $('amount').focus();
 });
 
 // ---------- copy ----------
@@ -1037,6 +1350,16 @@ $('saveBtn').addEventListener('click', async () => {
   }
   session.deals.unshift({ ...lastResult, ts: Date.now() });
   saveCurrentSession(session);
+
+  // reserve set-aside: only skim a % off *positive* profit, purely additive tracked-aside number
+  const reservePct = parseFloat($('reservePct').value) || 0;
+  if(reservePct > 0 && lastResult.profitUsdt > 0){
+    const r = getReserve();
+    r.total = (r.total || 0) + (lastResult.profitUsdt * reservePct / 100);
+    saveReserve(r);
+    renderOverview();
+  }
+
   $('saveBtn').textContent = 'Сохранено';
   setTimeout(() => $('saveBtn').textContent = 'Сохранить сделку', 1000);
   renderHistory();
@@ -1705,7 +2028,7 @@ function renderDayStatus(){
     const p = sessionBalanceParts(session);
     label.textContent = session.label;
     label.classList.remove('closed');
-    sub.textContent = `${session.comment ? session.comment + ' · ' : ''}Сделок: ${session.deals.length}, баланс сейчас: ${fmtUsdt(p.balance)}${frozenSuffix}`;
+    sub.textContent = `${session.comment ? session.comment + ' · ' : ''}Сделок: ${session.deals.length}, оборот: ${fmtTurnover(session.deals)}, баланс сейчас: ${fmtUsdt(p.balance)}${frozenSuffix}`;
     btn.textContent = '✅ Завершить день';
   } else {
     label.textContent = 'Нет открытого дня';
@@ -1724,6 +2047,22 @@ $('closeDayBtn').addEventListener('click', async () => {
     renderHistory(); renderExpenses(); renderDeposit();
   }
 });
+
+// turnover (sell-side volume only) for a set of deals, in fiat — per-currency breakdown if mixed
+function fmtTurnover(deals){
+  if(!deals || deals.length === 0) return fmt(0);
+  const cur = dealsCurrency(deals);
+  if(cur !== 'MIXED'){
+    const total = deals.reduce((s,e)=>s+(e.revenue||0),0);
+    return fmt(total, cur);
+  }
+  const map = {};
+  deals.forEach(d => {
+    const c = d.currency || 'RUB';
+    map[c] = (map[c]||0) + (d.revenue||0);
+  });
+  return Object.entries(map).map(([c,v]) => fmt(v,c)).join(' · ');
+}
 
 // ---------- reports list (Отчёты tab) ----------
 // currency of a set of deals: the shared code if uniform, or 'MIXED' if they use different fiat currencies
@@ -1746,6 +2085,73 @@ function fmtFiatMixed(amount, deals){
   if(cur !== 'MIXED') return fmt(amount, cur);
   const map = currencyBreakdownUsdt(deals);
   return Object.entries(map).map(([c,v]) => `${c}: ${fmtUsdt(v)}`).join(' · ');
+}
+
+function dealsWord(n){
+  const n10 = n % 10, n100 = n % 100;
+  if(n100 >= 11 && n100 <= 14) return 'сделок';
+  if(n10 === 1) return 'сделка';
+  if(n10 >= 2 && n10 <= 4) return 'сделки';
+  return 'сделок';
+}
+
+// ---------- period metrics broken down per fiat currency (RUB/TRY/INR/KZT) ----------
+function renderPeriodCurrencyMetrics(deals){
+  const container = $('periodCurrencyMetrics');
+  if(!container) return;
+  if(!deals || deals.length === 0){
+    container.innerHTML = '<div class="empty">Нет сделок за выбранный период</div>';
+    return;
+  }
+
+  const groups = {};
+  deals.forEach(d => {
+    const cur = d.currency || 'RUB';
+    if(!groups[cur]) groups[cur] = { count:0, amountUsdt:0, cost:0, revenue:0, feeFiat:0, feeUsdt:0, profitFiat:0, profitUsdt:0 };
+    const g = groups[cur];
+    const cost = d.cost != null ? d.cost : (d.amount||0) * (d.rateBuy||0);
+    const revenue = d.revenue != null ? d.revenue : (d.amount||0) * (d.rateSell||0);
+    const feeAmount = revenue * ((d.feePct||0)/100) + (d.feeFlat||0);
+    g.count += 1;
+    g.amountUsdt += d.amount || 0;
+    g.cost += cost;
+    g.revenue += revenue;
+    g.feeFiat += feeAmount;
+    g.feeUsdt += (d.rateBuy ? feeAmount / d.rateBuy : 0);
+    g.profitFiat += (d.profit != null ? d.profit : (revenue - feeAmount - cost));
+    g.profitUsdt += (d.profitUsdt || 0);
+  });
+
+  const order = Object.keys(CURRENCIES);
+  const currencies = Object.keys(groups).sort((a,b) => {
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+
+  container.innerHTML = currencies.map(cur => {
+    const g = groups[cur];
+    const avgBuy = g.amountUsdt !== 0 ? g.cost / g.amountUsdt : 0;
+    const avgSell = g.amountUsdt !== 0 ? g.revenue / g.amountUsdt : 0;
+    return `
+      <div class="curr-block">
+        <div class="curr-block-head">
+          <span class="curr-badge">${currencySymbol(cur)} ${cur}</span>
+          <span class="curr-count">${g.count} ${dealsWord(g.count)}</span>
+        </div>
+        <div class="curr-profit-row">
+          <div class="k">Чистая прибыль</div>
+          <div class="v ${g.profitUsdt < 0 ? 'neg' : 'pos'}">${fmtUsdt(g.profitUsdt)} <span>≈ ${fmt(g.profitFiat, cur)}</span></div>
+        </div>
+        <div class="curr-grid">
+          <div class="curr-item"><div class="k">Куплено</div><div class="v">${fmt(g.cost, cur)}</div></div>
+          <div class="curr-item"><div class="k">Продано</div><div class="v">${fmt(g.revenue, cur)}</div></div>
+          <div class="curr-item"><div class="k">Ср. покупка</div><div class="v">${fmtRate(avgBuy)} ${currencySymbol(cur)}</div></div>
+          <div class="curr-item"><div class="k">Ср. продажа</div><div class="v">${fmtRate(avgSell)} ${currencySymbol(cur)}</div></div>
+          <div class="curr-item full"><div class="k">Комиссии</div><div class="v">${fmtUsdt(g.feeUsdt)} ≈ ${fmt(g.feeFiat, cur)}</div></div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function renderReports(){
@@ -2046,6 +2452,68 @@ function allLossesFlat(){
   return losses;
 }
 
+// previous period of the same length immediately preceding [from, to]
+function previousPeriodRange(from, to){
+  const span = to - from + 1;
+  const prevTo = from - 1;
+  const prevFrom = prevTo - span + 1;
+  return {from: prevFrom, to: prevTo};
+}
+
+function renderPeriodCompare(from, to, curProfitUsdt){
+  const el = $('periodCompare');
+  if(!el) return;
+  const {from: prevFrom, to: prevTo} = previousPeriodRange(from, to);
+  const prevDeals = allDealsFlat().filter(e => e.ts >= prevFrom && e.ts <= prevTo);
+  if(prevDeals.length === 0){
+    el.textContent = 'нет данных за пред. период';
+    el.className = 'period-compare muted';
+    return;
+  }
+  const prevProfitUsdt = prevDeals.reduce((s,e)=>s+(e.profitUsdt||0),0);
+  if(prevProfitUsdt === 0){
+    const diff = curProfitUsdt;
+    el.textContent = (diff >= 0 ? '+' : '') + fmtUsdt(diff) + ' vs пред. период';
+    el.className = 'period-compare ' + (diff > 0 ? 'pos' : diff < 0 ? 'neg' : 'muted');
+    return;
+  }
+  const pct = ((curProfitUsdt - prevProfitUsdt) / Math.abs(prevProfitUsdt)) * 100;
+  el.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(0) + '% vs пред. период';
+  el.className = 'period-compare ' + (pct > 0 ? 'pos' : pct < 0 ? 'neg' : 'muted');
+}
+
+// ---------- time-of-day profitability (dayparts, from deals in the selected period) ----------
+const DAYPARTS = [
+  {key:'night',   label:'Ночь · 00–06',   from:0,  to:6},
+  {key:'morning', label:'Утро · 06–12',   from:6,  to:12},
+  {key:'day',     label:'День · 12–18',   from:12, to:18},
+  {key:'evening', label:'Вечер · 18–24',  from:18, to:24},
+];
+function renderTimeOfDay(deals){
+  const el = $('timeOfDayList');
+  if(!el) return;
+  if(!deals || deals.length === 0){
+    el.innerHTML = '<div class="empty">Нет сделок за выбранный период</div>';
+    return;
+  }
+  const buckets = DAYPARTS.map(dp => ({...dp, profit:0, count:0}));
+  deals.forEach(d => {
+    const h = new Date(d.ts).getHours();
+    const b = buckets.find(b => h >= b.from && h < b.to);
+    if(b){ b.profit += (d.profitUsdt||0); b.count += 1; }
+  });
+  const maxAbs = Math.max(1, ...buckets.map(b => Math.abs(b.profit)));
+  el.innerHTML = buckets.map(b => {
+    const pct = Math.round(Math.abs(b.profit) / maxAbs * 100);
+    return `
+      <div class="tod-row">
+        <div class="tod-head"><span>${b.label}</span><b class="${b.profit<0?'neg':''}">${fmtUsdt(b.profit)} · ${b.count} ${dealsWord(b.count)}</b></div>
+        <div class="tod-bar-bg"><div class="tod-bar-fill ${b.profit<0?'neg':''}" style="width:${pct}%"></div></div>
+      </div>
+    `;
+  }).join('');
+}
+
 function renderPeriod(){
   const {from, to} = periodRange();
   const hFiltered = allDealsFlat().filter(e => e.ts >= from && e.ts <= to);
@@ -2068,6 +2536,10 @@ function renderPeriod(){
   $('periodExpenses').textContent = fmtUsdt(expUsdt);
   $('periodLosses').textContent = fmtUsdt(lossUsdt);
   $('periodNet').textContent = fmtUsdt(net);
+
+  renderPeriodCurrencyMetrics(hFiltered);
+  renderPeriodCompare(from, to, profitUsdt);
+  renderTimeOfDay(hFiltered);
 
   lastPeriodProfitUsdt = profitUsdt;
   renderGoal();
@@ -2102,6 +2574,7 @@ function renderGoal(){
   }
 }
 $('goalTarget').addEventListener('input', () => { renderGoal(); saveState(); });
+$('reservePct').addEventListener('input', () => { saveState(); });
 
 function renderOverview(){
   const todayExp = allExpensesFlat().filter(e => isToday(e.ts)).reduce((s,e)=>s+e.amount,0);
@@ -2109,9 +2582,69 @@ function renderOverview(){
   $('totalExpensesAllTime').textContent = fmtUsdt(todayExp);
   $('totalLossesAllTime').textContent = fmtUsdt(todayLoss);
   $('totalFrozenNow').textContent = fmtUsdt(totalFrozen());
+  $('reserveTotal').textContent = fmtUsdt(getReserve().total || 0);
 }
 
-function renderReportsTab(){ syncRangeToTodayIfDefault(); renderDayStatus(); renderOverview(); renderReports(); renderPeriod(); }
+// ---------- mini month calendar (Отчёты tab) ----------
+let calViewDate = new Date();
+function renderCalendar(){
+  const grid = $('calGrid');
+  const label = $('calLabel');
+  if(!grid || !label) return;
+
+  const year = calViewDate.getFullYear();
+  const month = calViewDate.getMonth();
+  label.textContent = calViewDate.toLocaleDateString('ru-RU', {month:'long', year:'numeric'});
+
+  // day-of-month -> {profit, sessionId} closed sessions on that calendar day (by startedAt — the day the session was opened/named — falling back to closedAt for older data without startedAt)
+  const byDay = {};
+  getArchive().forEach(s => {
+    const ts = s.startedAt || s.closedAt || s.id;
+    if(!ts) return;
+    const d = new Date(ts);
+    if(d.getFullYear() !== year || d.getMonth() !== month) return;
+    const dom = d.getDate();
+    const parts = sessionBalanceParts(s);
+    if(!byDay[dom]) byDay[dom] = {profit:0, id:s.id};
+    byDay[dom].profit += parts.profitUsdt;
+    byDay[dom].id = s.id;
+  });
+
+  const firstOfMonth = new Date(year, month, 1);
+  const leadBlanks = (firstOfMonth.getDay() + 6) % 7; // Monday-first offset
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  let html = '';
+  for(let i = 0; i < leadBlanks; i++) html += '<div class="cal-cell empty-cell"></div>';
+  for(let dom = 1; dom <= daysInMonth; dom++){
+    const info = byDay[dom];
+    if(!info){
+      html += `<div class="cal-cell">${dom}</div>`;
+    } else {
+      const cls = info.profit > 0 ? 'pos' : (info.profit < 0 ? 'neg' : '');
+      html += `<div class="cal-cell has-data ${cls}" data-session-id="${info.id}">${dom}</div>`;
+    }
+  }
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.cal-cell.has-data').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const sid = cell.dataset.sessionId;
+      const match = getArchive().find(s => String(s.id) === String(sid));
+      if(match) openReport(match.id);
+    });
+  });
+}
+$('calPrevBtn').addEventListener('click', () => {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() - 1, 1);
+  renderCalendar();
+});
+$('calNextBtn').addEventListener('click', () => {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() + 1, 1);
+  renderCalendar();
+});
+
+function renderReportsTab(){ showReportsSubview('overview'); syncRangeToTodayIfDefault(); renderDayStatus(); renderOverview(); renderReports(); renderPeriod(); renderCalendar(); }
 
 // ---------- excel export ----------
 $('exportExcelBtn').addEventListener('click', async () => {
@@ -2359,15 +2892,77 @@ $('importExcelFile').addEventListener('change', async (e) => {
   );
 });
 
+// ---------- full JSON backup / restore (Отчёты tab) ----------
+function buildBackupObject(){
+  return {
+    app: 'p2p-amacy',
+    version: 1,
+    exportedAt: Date.now(),
+    data: {
+      [STORAGE_KEY]: loadJSON(STORAGE_KEY, null),
+      [CURRENT_SESSION_KEY]: loadJSON(CURRENT_SESSION_KEY, null),
+      [ARCHIVE_KEY]: loadJSON(ARCHIVE_KEY, null),
+      [FROZEN_KEY]: loadJSON(FROZEN_KEY, null),
+      [RESERVE_KEY]: loadJSON(RESERVE_KEY, null),
+    }
+  };
+}
+$('exportJsonBtn').addEventListener('click', () => {
+  const obj = buildBackupObject();
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `p2p_amacy_backup_${dateToInputValue(new Date())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+$('importJsonBtn').addEventListener('click', () => $('importJsonFile').click());
+$('importJsonFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+
+  let obj;
+  try{
+    const text = await file.text();
+    obj = JSON.parse(text);
+  } catch(err){
+    await showAlert('Не удалось прочитать файл — это должен быть JSON-бэкап, экспортированный этим приложением.');
+    return;
+  }
+  if(!obj || typeof obj !== 'object' || !obj.data){
+    await showAlert('Файл не похож на бэкап этого приложения.');
+    return;
+  }
+
+  const ok = await showConfirm('Восстановить данные из бэкапа?\n\nЭто ПОЛНОСТЬЮ заменит текущие сделки, расходы, депозит, архив дней, заморозки и резерв содержимым файла. Отменить это действие нельзя.');
+  if(!ok) return;
+
+  const d = obj.data;
+  if(d[STORAGE_KEY] !== undefined && d[STORAGE_KEY] !== null) saveJSON(STORAGE_KEY, d[STORAGE_KEY]);
+  if(d[CURRENT_SESSION_KEY] !== undefined) saveJSON(CURRENT_SESSION_KEY, d[CURRENT_SESSION_KEY]);
+  if(d[ARCHIVE_KEY] !== undefined && d[ARCHIVE_KEY] !== null) saveJSON(ARCHIVE_KEY, d[ARCHIVE_KEY]);
+  if(d[FROZEN_KEY] !== undefined && d[FROZEN_KEY] !== null) saveJSON(FROZEN_KEY, d[FROZEN_KEY]);
+  if(d[RESERVE_KEY] !== undefined && d[RESERVE_KEY] !== null) saveJSON(RESERVE_KEY, d[RESERVE_KEY]);
+
+  await showAlert('Бэкап восстановлен. Сейчас приложение перезагрузится.');
+  location.reload();
+});
+
 // ---------- init ----------
 (function init(){
   migrateOldDataIfNeeded();
+  populateConverterCurrencySelects();
 
   const s = loadJSON(STORAGE_KEY, {});
   applyTheme(s.theme || 'dark');
   lastRatesByCurrency = s.lastRatesByCurrency || {};
   if(s.currency === 'usdt') document.querySelector('[data-curr="usdt"]').click();
-  if(s.fiatCurrency && CURRENCIES[s.fiatCurrency]) document.querySelector(`[data-fiat="${s.fiatCurrency}"]`).click();
+  if(s.fiatCurrency && CURRENCIES[s.fiatCurrency]) currentFiatCurrency = s.fiatCurrency;
   updateFiatLabels();
   if(s.amount) $('amount').value = s.amount;
   if(s.rateSell) $('rateSell').value = s.rateSell;
@@ -2376,6 +2971,7 @@ $('importExcelFile').addEventListener('change', async (e) => {
   if(s.feeFlat) $('feeFlat').value = s.feeFlat;
   if(s.minThreshold) $('minThreshold').value = s.minThreshold;
   if(s.goalTarget) $('goalTarget').value = s.goalTarget;
+  if(s.reservePct) $('reservePct').value = s.reservePct;
   calc();
 
   const todayStr = dateToInputValue(new Date());
@@ -2383,6 +2979,7 @@ $('importExcelFile').addEventListener('change', async (e) => {
   $('rangeTo').value = todayStr;
 
   renderDayStatus();
+  checkBotPrompt();
 })();
 
 </script>
